@@ -1,0 +1,13 @@
+kind: pipeline
+type: docker
+name: test
+
+steps:
+- name: build
+  image: nersc/ubuntu-mpi
+  commands:
+  - mpicc /drone/src/ring.c -o /drone/src/ring
+- name: test
+  image: nersc/ubuntu-mpi
+  commands:
+  - mpirun -np 5 /drone/src/ring
