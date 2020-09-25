@@ -4,10 +4,10 @@ name: test
 
 steps:
 - name: build
-  image: nersc/ubuntu-mpi
+  image: ashael/openmpi
   commands:
   - mpicc /drone/src/ring.c -o /drone/src/ring
 - name: test
-  image: nersc/ubuntu-mpi
+  image: ashael/openmpi
   commands:
   - mpirun -np 5 /drone/src/ring
