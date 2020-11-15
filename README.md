@@ -16,7 +16,7 @@
 or using short option names:
 ``./cli -d /some/path -p $(echo -n 'test' | sha256sum) -v``
 
-## How to run dictionary attack:
+## How to run brute force attack:
 ``./cli --bruteforce --lowercase --uppercase --numbers --symbols -p $(echo -n 'test' | sha256sum) --verbose``
 or using short option names:
 ``./cli -bluns -p $(echo -n 'test' | sha256sum) -v``
