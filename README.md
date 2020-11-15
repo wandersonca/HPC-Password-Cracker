@@ -1,4 +1,4 @@
-# CP631 - Final Project
+# HPC-Password-Cracker
 [![Build Status](https://cloud.drone.io/api/badges/wandersonca/CP631-FinalProject/status.svg)](https://cloud.drone.io/wandersonca/CP631-FinalProject)
 
 ## How to hash a password for testing
