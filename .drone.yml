@@ -4,10 +4,7 @@ name: test
 
 steps:
 - name: build
-  image: ashael/openmpi
+  image: gcc:4.9
   commands:
-  - mpicc /drone/src/ring.c -o /drone/src/ring
-- name: test
-  image: ashael/openmpi
-  commands:
-  - mpirun --allow-run-as-root -np 5 /drone/src/ring
+  - cd /drone/src
+  - gcc -std=c99 cli.c -o cli -lcrypto
