@@ -4,7 +4,7 @@
 
 int dictionary_crack(char* password_hash, char *dictionary_path, int verbose)
 {
-    printf("Using dictionary path %s.\n", dictionary_path);
+    printf("Using dictionary path: %s\n", dictionary_path);
     static unsigned char buffer[64];
     if(verbose) 
     {
