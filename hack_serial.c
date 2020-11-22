@@ -9,8 +9,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#define N 5
-#define PASS "ab53c"
+#define N 3
+#define PASS "1ac"
 
 void bruteSequential(int length, char *pattern, char *pass);
 void bruteImpl(char *str, int index, int maxDepth, char *pattern, char *pass);
@@ -20,23 +20,33 @@ int main()
 {
     char *pattern = "abcdefghigjlmnopqrstuvwxyz0123456789!@#$^&*";
     bruteSequential(N, pattern, PASS);
+    //printf("%d",compareStr("1a","1a"));
+
 }
 
 bool compareStr(char *a, char *b)
 {
     int i = 0;
+    int countLen = 0;
     for (i = 0; i < N; i++)
     {
         if ((int)a[i] == (int)b[i])
         {
-            continue;
+            countLen += 1;
         }
         else
         {
             return false;
         }
     }
-    return true;
+    if (countLen == N)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void bruteImpl(char *str, int index, int maxDepth, char *pattern, char *pass)
@@ -47,9 +57,9 @@ void bruteImpl(char *str, int index, int maxDepth, char *pattern, char *pass)
 
         if (index == maxDepth - 1)
         {
-            if (compareStr(str, pattern))
+            if (compareStr(str, pass))
             {
-                printf("Found pass in loop: %s", str);
+                printf("Found pass in loop: %s\n", str);
                 break;
             }
         }
