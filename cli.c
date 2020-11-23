@@ -84,7 +84,7 @@ int main(int argc, char **argv)
             }
             break;
         case 'c':
-            strcat(bruteforce_characters, "0123456789");
+            character_length = atoi(optarg);
             break;
         case '?':
             help();

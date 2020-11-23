@@ -1,29 +1,36 @@
-int bruteforce_crack(char* password_hash, char * characters, int length, int verbose)
+#include <math.h>
+
+int bruteforce_crack(char* password_hash, char * characters, int password_max_length, int verbose)
 {
     printf("Brute force of hash: %s\n",password_hash);
-    printf("Using %d of characters: %s\n", length, characters);
-
+    int number_of_characters = strlen(characters);
+    printf("Using %d characters: %s\n", number_of_characters, characters);
     static unsigned char buffer[65];
-    if(verbose) 
-    {
-            printf("Hash to compare: %s\n", password_hash);
-    }
+    printf("Calculating to a length of %d\n", password_max_length);
 
-    for(int i=0; i < 1; i++)
-    {
-        // we should get to this by brute force...
-        char passwordToTest[] = "test";
-        hash(passwordToTest, buffer);
-        if(verbose) 
+    for(int i=1; i <= password_max_length; i++) {
+        long possibilities = (long) pow(number_of_characters, i);
+        if(verbose)
         {
-            printf("`%s` -> %s\n", passwordToTest, buffer);
+            printf("Now calculating password length of %d, it has %d possibilities\n", i, possibilities);
         }
-
-        if (!strcmp(password_hash, buffer))
+        char passwordToTest[i];
+        for (int j = 0; j < possibilities; j++)
         {
-            printf("Password found: %s\n", passwordToTest);
-            return 0;
-        }        
+            strcpy(passwordToTest, "");
+            int val = j;
+            for (int k = 0; k < i; k++)
+            {
+                passwordToTest[k] = characters[val % number_of_characters];
+                val = val / number_of_characters;       
+            }
+            hash(passwordToTest, buffer);
+            if (!strcmp(password_hash, buffer))
+            {
+                printf("Password found: %s\n", passwordToTest);
+                return 0;
+            }       
+        }
     }
     return 1;
 }
