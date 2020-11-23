@@ -1,15 +1,17 @@
 int bruteforce_crack(char* password_hash, char * characters, int length, int verbose)
 {
-    printf("Brute force of hash: %s\n",password_hash);
+    int i;
+
+    printf("Brute force of hash: %s\n", password_hash);
     printf("Using %d of characters: %s\n", length, characters);
 
     static unsigned char buffer[65];
     if(verbose) 
     {
-            printf("Hash to compare: %s\n", password_hash);
+        printf("Hash to compare: %s\n", password_hash);
     }
 
-    for(int i=0; i < 1; i++)
+    for(i=0; i < 1; i++)
     {
         // we should get to this by brute force...
         char passwordToTest[] = "test";
