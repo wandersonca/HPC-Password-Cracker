@@ -18,11 +18,11 @@ For ease of use at the command line, these files are renamed to that they are sh
 
 | Original Name | Short Name of Sample |
 | --------------|----------------------|
-| xato-net-10-million-passwords-10.txt | 10pass.txt |
-| xato-net-10-million-passwords-100.txt | 100pass.txt |
-| xato-net-10-million-passwords-1000.txt | 1kpass.txt |
-| xato-net-10-million-passwords-10000.txt | 10kpass.txt |
-| xato-net-10-million-passwords-100000.txt | 100kpass.txt |
-| xato-net-10-million-passwords-1000000.txt | 1mpass.txt |
-| xato-net-10-million-passwords-10000000.txt | 10mpass.txt |
+| xato-net-10-million-passwords-10.txt | 10_pass.txt |
+| xato-net-10-million-passwords-100.txt | 100_pass.txt |
+| xato-net-10-million-passwords-1000.txt | 1k_pass.txt |
+| xato-net-10-million-passwords-10000.txt | 10k_pass.txt |
+| xato-net-10-million-passwords-100000.txt | 100k_pass.txt |
+| xato-net-10-million-passwords-1000000.txt | 1m_pass.txt |
+| xato-net-10-million-passwords-10000000.txt | 10m_pass.txt |
 
