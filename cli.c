@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     int verbose_flag = 0;
     int bruteforce_flag = 0;
     int dictionary_flag = 0;
-    int character_length = 4;
+    int character_length = 3;
     char password_hash[64] = "";
     char bruteforce_characters[256] = "";
     char dictionary_path[256] = "";
