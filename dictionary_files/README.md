@@ -24,5 +24,5 @@ For ease of use at the command line, these files are renamed to that they are sh
 | 10000 | xato-net-10-million-passwords-10000.txt | 10k_pass.txt |
 | 100000 | xato-net-10-million-passwords-100000.txt | 100k_pass.txt |
 | 1 million | xato-net-10-million-passwords-1000000.txt | 1m_pass.txt |
-| 10 million xato-net-10-million-passwords.txt | 10m_pass.txt |
+| 10 million | xato-net-10-million-passwords.txt | 10m_pass.txt |
 
