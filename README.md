@@ -1,5 +1,5 @@
 # HPC Password Cracker
-[![Build Status](https://cloud.drone.io/api/badges/wandersonca/CP631-FinalProject/status.svg)](https://cloud.drone.io/wandersonca/CP631-FinalProject)
+[![Build Status](https://cloud.drone.io/api/badges/wandersonca/HPC-Password-Cracker/status.svg)](https://cloud.drone.io/wandersonca/HPC-Password-Cracker)
 
 ## How to hash a password for testing
 ``echo -n 'test' | sha256sum``
