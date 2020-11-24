@@ -13,5 +13,5 @@ steps:
   commands:
   - cd /drone/src 
   # should exit non-zero and fail pipeline if either of these don't find a match
-  - ./cli -bl -c 4 -p $(echo -n 'test1' | sha256sum) --verbose
+  - ./cli -bl -c 4 -p $(echo -n 'test' | sha256sum) --verbose
   - ./cli -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum)
