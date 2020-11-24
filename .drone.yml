@@ -7,7 +7,7 @@ steps:
   image: gcc:4.9
   commands:
   - cd /drone/src
-  - gcc cli.c -o cli -lcrypto
+  - gcc cli.c -o cli -lcrypto -lm
 - name: test
   image: gcc:4.9
   commands:
