@@ -8,18 +8,19 @@ int bruteforce_crack(char* password_hash, char * characters, int password_max_le
     static unsigned char buffer[65];
     printf("Calculating to a length of %d\n", password_max_length);
 
-    for(int i=1; i <= password_max_length; i++) {
+    int i,j,k;
+    for(i=1; i <= password_max_length; i++) {
         long possibilities = (long) pow(number_of_characters, i);
         if(verbose)
         {
             printf("Now calculating password length of %d, it has %d possibilities\n", i, possibilities);
         }
         char passwordToTest[i];
-        for (int j = 0; j < possibilities; j++)
+        for (j = 0; j < possibilities; j++)
         {
             strcpy(passwordToTest, "");
             int val = j;
-            for (int k = 0; k < i; k++)
+            for (k = 0; k < i; k++)
             {
                 passwordToTest[k] = characters[val % number_of_characters];
                 val = val / number_of_characters;       

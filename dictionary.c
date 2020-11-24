@@ -1,31 +1,86 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 #include "hash.c"
+
+/* 
+    remove_new_line()
+    - utility function to remove new line character from each entry in the given file 
+*/
+int remove_new_line(char *input, char **output)
+{
+    int len = strlen(input);
+
+    if(input[len-1] == '\n')
+    {
+        *output = (char*)malloc(sizeof(char)*(len-1));
+        strncpy(*output, input, len-1);
+    }
+    else
+    {
+        *output = (char*)malloc(sizeof(char)*(len-1));
+        strncpy(*output, input, len);
+    }
+    
+    return 0;
+}
+
 
 int dictionary_crack(char* password_hash, char *dictionary_path, int verbose)
 {
-    printf("Using dictionary path %s.\n", dictionary_path);
-    static unsigned char buffer[64];
+    static unsigned char candidate_hash[64];
+
+    FILE *file;
+    char *line = NULL;
+    char *candidate_buffer = NULL;
+	size_t len = 0;
+	ssize_t read;
+ 
+	file = fopen(dictionary_path, "r");
+	if (file == NULL)
+    {
+        printf("Error reading dictionary file: %s\n", dictionary_path);
+        printf("Exiting with error code %d.\n", EXIT_FAILURE);
+		exit(EXIT_FAILURE);
+    }
+
+    printf("\n>>> Using dictionary path: %s\n\n", dictionary_path);
+
+    //hash(password_hash, password_buffer);
     if(verbose) 
     {
-            printf("Hash to compare: %s\n", password_hash);
+        printf("---------------------------------------------------------------------------------------------------------------------------------\n");
+        printf("Looking for this password:\t\t\t\t\t%s\n", password_hash);
+        printf("---------------------------------------------------------------------------------------------------------------------------------\n");
+        printf("\n");
     }
 
-    for(int i=0; i < 1; i++)
+  	while ((read = getline(&line, &len, file)) != -1)
     {
-        // should read in these from a file...
-        char passwordToTest[] = "test";
-        hash(passwordToTest, buffer);
+        remove_new_line(line, &candidate_buffer);        
+        hash(candidate_buffer, candidate_hash);
+
         if(verbose) 
         {
-            printf("`%s` -> %s\n", passwordToTest, buffer);
+            printf("Password candidate from file:\t%16s\t--->\t%s\n", candidate_buffer, candidate_hash);
         }
 
-        if (!strcmp(password_hash, buffer))
+        if (!strcmp(password_hash, candidate_hash))
         {
-            printf("Password found: %s\n", passwordToTest);
+            printf("\nSUCCESS!!\tPassword found: %s\n", candidate_buffer);
+            
+            free(candidate_buffer);
+	        fclose(file);
             return 0;
         }        
+
+        free(candidate_buffer);    
     }
+
+    fclose(file);
+
+    printf("\n");
+
     return 1;
 }
