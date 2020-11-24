@@ -8,6 +8,7 @@ int bruteforce_crack(char* password_hash, char * characters, int password_max_le
     static unsigned char buffer[65];
     printf("Calculating to a length of %d\n", password_max_length);
 
+    int i,j,k;
     for(int i=1; i <= password_max_length; i++) {
         long possibilities = (long) pow(number_of_characters, i);
         if(verbose)
