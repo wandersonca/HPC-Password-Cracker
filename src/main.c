@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
-#include "dictionary.h"
-#include "bruteforce.h"
+#include "dictionary/dictionary.h"
+#include "bruteforce/bruteforce.h"
 
 
 void help()
 {
-    printf("WLU Password Cracker Help:\n");
+    printf("HPC Password Cracker Help:\n");
     printf("--verbose (-v): verbose output\n");
     //TODO: add the rest of the options
 }

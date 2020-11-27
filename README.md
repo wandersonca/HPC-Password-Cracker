@@ -6,26 +6,21 @@
 
 ## How to compile
 1. Make sure you install the libssl-dev package. On Ubuntu ``sudo apt-get install libssl-dev``.
-2. Run gcc: ``gcc cli.c bruteforce-serial.c dictionary-serial.c hash.c -o cli -lcrypto -lm``
-
-## How to compile with Docker
-1. Run gcc within a container: 
-
-``docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp gcc:4.9 gcc -std=c99 cli.c -o cli -lcrypto``
+2. Run make: ``make serial``
 
 ## How to run dictionary attack:
-``./cli --dictionary dictionary_files/100_pass.txt --password $(echo -n '123456' | sha256sum) --verbose``
+``./bin/serial-cracker --dictionary dictionary_files/100_pass.txt --password $(echo -n '123456' | sha256sum) --verbose``
 
 or using short option names:
 
-``./cli -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum) -v``
+``./bin/serial-cracker -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum) -v``
 
 ## How to run brute force attack:
-``./cli --bruteforce --lowercase --uppercase --numbers --symbols -p $(echo -n 'test' | sha256sum) --verbose``
+``./bin/serial-cracker --bruteforce --lowercase --uppercase --numbers --symbols -p $(echo -n 'test' | sha256sum) --verbose``
 
 or using short option names:
 
-``./cli -bluns -p $(echo -n 'test' | sha256sum) -v``
+``./bin/serial-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
 
 ## Authors
 * Donna Harris
