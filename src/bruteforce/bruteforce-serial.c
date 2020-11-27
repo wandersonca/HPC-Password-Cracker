@@ -1,4 +1,9 @@
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "../hash/hash.h"
+#include "bruteforce-util.c"
 
 int bruteforce_crack(char* password_hash, char * characters, int password_max_length, int verbose)
 {
@@ -13,7 +18,7 @@ int bruteforce_crack(char* password_hash, char * characters, int password_max_le
         long possibilities = (long) pow(number_of_characters, i);
         if(verbose)
         {
-            printf("Now calculating password length of %d, it has %d possibilities\n", i, possibilities);
+            printf("Now calculating password length of %d, it has %ld possibilities\n", i, possibilities);
         }
         char passwordToTest[i];
         for (j = 0; j < possibilities; j++)
