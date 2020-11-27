@@ -1,12 +1,12 @@
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 #include "../hash/hash.h"
-#include "dictionary-util.c"
-#include "mpi.h"
+#include "bruteforce-util.c"
+#include <mpi.h>
 
-int dictionary_crack(char* password_hash, char *dictionary_path, int verbose)
+int bruteforce_crack(char* password_hash, char * characters, int password_max_length, int verbose)
 {
   int         my_rank;       /* rank of process      */
   int         p;             /* number of processes  */

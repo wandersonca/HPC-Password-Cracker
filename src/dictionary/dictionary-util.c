@@ -1,3 +1,5 @@
+// Add any common functionality here...
+
 /* 
     remove_new_line()
     - utility function to remove new line character from each entry in the given file 

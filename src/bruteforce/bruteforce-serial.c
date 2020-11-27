@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../hash/hash.h"
+#include "bruteforce-util.c"
 
 int bruteforce_crack(char* password_hash, char * characters, int password_max_length, int verbose)
 {
