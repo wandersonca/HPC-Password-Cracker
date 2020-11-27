@@ -6,7 +6,7 @@
 
 ## How to compile
 1. Make sure you install the libssl-dev package. On Ubuntu ``sudo apt-get install libssl-dev``.
-2. Run gcc: ``gcc cli.c -o cli -lcrypto``
+2. Run gcc: ``gcc cli.c bruteforce-serial.c dictionary-serial.c hash.c -o cli -lcrypto -lm``
 
 ## How to compile with Docker
 1. Run gcc within a container: 

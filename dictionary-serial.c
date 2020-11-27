@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-#include "hash.c"
+#include "hash.h"
 
 /* 
     remove_new_line()

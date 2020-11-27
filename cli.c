@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <getopt.h>
-#include "dictionary.c"
-#include "bruteforce.c"
+#include "dictionary.h"
+#include "bruteforce.h"
 
 
 void help()
