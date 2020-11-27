@@ -24,6 +24,7 @@ or using short option names:
 
 ## How to run MPI version:
 ``mpirun -np 4 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
+
 ``mpirun -np 4 ./bin/mpi-cracker -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum) -v``
 
 ## Authors
