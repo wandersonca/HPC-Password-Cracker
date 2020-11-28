@@ -9,19 +9,17 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#define N 3
-#define PASS "1ac"
+#define N 5
+#define PASS "1acaa"
 
 void bruteSequential(int length, char *pattern, char *pass);
-void bruteImpl(char *str, int index, int maxDepth, char *pattern, char *pass);
+char* bruteImpl(char *str, int index, int maxDepth, char *pattern, char *pass);
 bool compareStr(char *a, char *b);
 
 int main()
 {
     char *pattern = "abcdefghigjlmnopqrstuvwxyz0123456789!@#$^&*";
     bruteSequential(N, pattern, PASS);
-    //printf("%d",compareStr("1a","1a"));
-
 }
 
 bool compareStr(char *a, char *b)
@@ -49,9 +47,10 @@ bool compareStr(char *a, char *b)
     }
 }
 
-void bruteImpl(char *str, int index, int maxDepth, char *pattern, char *pass)
+char* bruteImpl(char *str, int index, int maxDepth, char *pattern, char *pass)
 {
-    for (int i = 0; i < (strlen(pattern) - 1); ++i)
+    int i = 0;
+    for (i = 0; i < (strlen(pattern) - 1); ++i)
     {
         str[index] = pattern[i];
 
@@ -60,7 +59,7 @@ void bruteImpl(char *str, int index, int maxDepth, char *pattern, char *pass)
             if (compareStr(str, pass))
             {
                 printf("Found pass in loop: %s\n", str);
-                break;
+                return str;
             }
         }
         else
@@ -70,8 +69,9 @@ void bruteImpl(char *str, int index, int maxDepth, char *pattern, char *pass)
 
 void bruteSequential(int length, char *pattern, char *pass)
 {
-    char *stream = malloc(N + 1);
-    for (int i = 1; i <= N; ++i)
+    char *stream = malloc(length + 1);
+    int i = 0;
+    for (i = 1; i <= length; ++i)
     {
         stream[i] = '\0';
         bruteImpl(stream, 0, i, pattern, pass);
