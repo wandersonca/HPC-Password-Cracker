@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 #include <openssl/sha.h>
 
 char *hash(char *input, char outputBuffer[64])

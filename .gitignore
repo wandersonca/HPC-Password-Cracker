@@ -1,2 +1,5 @@
 cli
 .DS_Store
+.vscode
+*.o
+bin/
