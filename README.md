@@ -22,10 +22,15 @@ or using short option names:
 
 ``./bin/serial-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
 
+## How to pre-split files for parallel dictionary attack methods:
+Provide the number of lines per file. (E.g., 4 processes, need 4 files. 100 passwords split evenly into 25 lines per file.)
+``split -d -l 25 dictionary_files/100_pass.txt temp/file_``
+
 ## How to run MPI version:
 ``mpirun -np 4 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
 
-``mpirun -np 4 ./bin/mpi-cracker -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum) -v``
+Pass in the "temp" directory for the location of the split files to be processed across processes.
+``mpirun -np 4 ./bin/mpi-cracker -d temp -p $(echo -n '123456' | sha256sum) -v``
 
 ## Authors
 * Donna Harris

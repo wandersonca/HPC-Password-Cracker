@@ -77,6 +77,7 @@ int main(int argc, char **argv)
         case 's':
             if(optarg == NULL)
             {
+                // TODO?:  Does % in this string need to be escaped? E.g., %% or is it just the editor picking up on this?
                 strcat(bruteforce_characters, "~!@#$%^&*()_+");
             } 
             else 
