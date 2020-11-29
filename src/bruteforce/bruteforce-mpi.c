@@ -26,7 +26,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
 
   /*Before MPI Starts*/
   printf("Brute force of hash: %s\n", password_hash);
-  int number_of_characters = strlen(characters);
+  number_of_characters = strlen(characters);
   printf("Using %d characters: %s\n", number_of_characters, characters);
   static unsigned char buffer[65];
   printf("Calculating to a length of %d\n", password_max_length);
