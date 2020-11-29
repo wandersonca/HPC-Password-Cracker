@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     int bruteforce_flag = 0;
     int dictionary_flag = 0;
     int character_length = 4;
-    char password_hash[64] = "";
+    char password_hash[65] = "";
     char bruteforce_characters[256] = "";
     char dictionary_path[256] = "";
 
