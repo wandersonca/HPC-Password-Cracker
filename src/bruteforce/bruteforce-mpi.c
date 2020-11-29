@@ -24,13 +24,6 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
   long possibilities_local = 0;
   int number_of_characters = 0;
 
-  /*Before MPI Starts*/
-  printf("Brute force of hash: %s\n", password_hash);
-  number_of_characters = strlen(characters);
-  printf("Using %d characters: %s\n", number_of_characters, characters);
-  static unsigned char buffer[65];
-  printf("Calculating to a length of %d\n", password_max_length);
-
   /* Start up MPI */
   MPI_Init(NULL, NULL);
 
@@ -39,6 +32,17 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
 
   /* Find out number of processes */
   MPI_Comm_size(MPI_COMM_WORLD, &p);
+
+  static unsigned char buffer[65];
+  number_of_characters = strlen(characters);
+
+  if (my_rank == 0)
+  {
+    /*Before MPI Starts*/
+    printf("Brute force of hash: %s\n", password_hash);
+    printf("Using %d characters: %s\n", number_of_characters, characters);
+    printf("Calculating to a length of %d\n", password_max_length);
+  }
 
   int i, j, k; //Individually working on each process here
   for (i = 1; i <= password_max_length; i++)
