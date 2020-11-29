@@ -50,7 +50,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
     }
 
     /*Split up the chunk by inexing*/
-    int stepSize = (int) (possibilities / my_rank);
+    int stepSize = (int) (possibilities / p);
     int startIndex = my_rank * stepSize;
     int endIndex = 0;
     if (my_rank = p - 1)
