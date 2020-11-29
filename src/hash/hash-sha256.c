@@ -12,5 +12,5 @@ char *hash(char *input, char outputBuffer[64])
     {
         sprintf(outputBuffer + (i * 2), "%02x", hash[i]);
     }
-    outputBuffer[64] = 0;
+    outputBuffer[64] = '\0';
 }

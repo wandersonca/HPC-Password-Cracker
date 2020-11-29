@@ -108,9 +108,5 @@ int main(int argc, char **argv)
     {
         result = bruteforce_crack(password_hash, bruteforce_characters, character_length, verbose_flag);
     }
-    if (result) 
-    {
-        printf("Password not found :(\n");
-    }
     exit(result);
 }

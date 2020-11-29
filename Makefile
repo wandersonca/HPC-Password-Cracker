@@ -1,3 +1,5 @@
+all: serial mpi
+
 serial: src/main.o src/bruteforce/bruteforce-serial.o src/dictionary/dictionary-serial.o src/hash/hash-sha256.o
 	mkdir -p bin
 	gcc -o bin/serial-cracker src/main.o src/bruteforce/bruteforce-serial.o src/dictionary/dictionary-serial.o src/hash/hash-sha256.o -lm -lcrypto
