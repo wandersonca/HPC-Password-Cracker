@@ -44,22 +44,16 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
   for (i = 1; i <= password_max_length; i++)
   {
     long possibilities = (long)pow(number_of_characters, i);
+    /*Split up the chunk by inexing*/
+    int stepSize = (int)(possibilities / p);
+    int startIndex = my_rank * stepSize;
+    int endIndex = startIndex + stepSize;
+    if ((p - my_rank) == 1)
+      endIndex += possibilities % endIndex;
+
     if (verbose)
     {
-      printf("Now calculating password length of %d, it has %ld possibilities\n", i, possibilities);
-    }
-
-    /*Split up the chunk by inexing*/
-    int stepSize = (int) (possibilities / p);
-    int startIndex = my_rank * stepSize;
-    int endIndex = 0;
-    if (my_rank = p - 1)
-    {
-      endIndex = possibilities;
-    }
-    else
-    {
-      endIndex = startIndex + stepSize;
+      printf("Rank %d is calculating password length of %d, with %ld possibilities [%d to %d]\n", my_rank, i, possibilities, startIndex, endIndex);
     }
 
     char passwordToTest[i];
@@ -81,22 +75,21 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
     }
   }
 
-  if (my_rank != 0)
-  {
-    sprintf(message, "Greetings from process %d!", my_rank);
-    dest = 0;
-    /* Use strlen+1 so that '\0' gets transmitted */
-    MPI_Send(message, strlen(message) + 1, MPI_CHAR, dest, tag, MPI_COMM_WORLD);
-  }
+  // if (my_rank != 0)
+  // {
+  //   sprintf(message, "Greetings from process %d!", my_rank);
+  //   dest = 0;
+  //   MPI_Send(message, strlen(message) + 1, MPI_CHAR, dest, tag, MPI_COMM_WORLD); /* Use strlen+1 so that '\0' gets transmitted */
+  // }
 
-  else
-  { /* my_rank == 0 */
-    for (source = 1; source < p; source++)
-    {
-      MPI_Recv(message, 100, MPI_CHAR, source, tag, MPI_COMM_WORLD, &status);
-      printf("%s\n", message);
-    }
-  }
+  // else
+  // { /* my_rank == 0 */
+  //   for (source = 1; source < p; source++)
+  //   {
+  //     MPI_Recv(message, 100, MPI_CHAR, source, tag, MPI_COMM_WORLD, &status);
+  //     printf("%s\n", message);
+  //   }
+  // }
 
   /* Shut down MPI */
   MPI_Finalize();
