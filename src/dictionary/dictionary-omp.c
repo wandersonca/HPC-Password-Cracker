@@ -42,7 +42,7 @@ int dictionary_crack(char* password_hash, char *dictionary_path, int verbose)
         remove_new_line(line, &candidate_buffer);     
         #pragma omp task firstprivate(candidate_buffer)
         {
-            static unsigned char candidate_hash[65];
+            unsigned char candidate_hash[65];
             hash(candidate_buffer, candidate_hash); 
 
             if(verbose) 
@@ -53,9 +53,6 @@ int dictionary_crack(char* password_hash, char *dictionary_path, int verbose)
             if (!strcmp(password_hash, candidate_hash))
             {
                 printf("\nSUCCESS!!\tPassword found: %s\n", candidate_buffer);
-                
-                //free(candidate_buffer);
-                //fclose(file);
                 result = 0;
             }        
 
