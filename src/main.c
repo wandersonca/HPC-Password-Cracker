@@ -8,9 +8,40 @@
 
 void help()
 {
-    printf("HPC Password Cracker Help:\n");
-    printf("--verbose (-v): verbose output\n");
-    //TODO: add the rest of the options
+    printf("\n__HPC Password Cracker Help__\n\n");
+
+    printf("General Usage:\n");
+    printf("   Run Serial:\t\t\t./bin/serial-cracker [attack_type] [attack_settings] -p [password_hash]\n");
+    printf("   Run Parallel using MPI:\t./bin/mpi-cracker -np [number_of_processes] [attack_type] [attack_settings] -p [password_hash]\n");
+    printf("   Run Parallel using OpenMP:\t./bin/omp-cracker -fopenmp OMP_NUM_THREADS=[number_of_threads] [attack_type] [attack_settings] -p [password_hash]\n");
+
+    printf("\n");    
+    
+    printf("\"Dictionary Attack\" Usage:\n");
+    printf("   Run Serial:\t\t\t./bin/serial-cracker -d [path] -p [password_hash]\n");
+    printf("   Run Parallel using MPI:\t./bin/mpi-cracker -np [number_of_processes] -d [path] -p [password_hash]\n");
+    printf("   Run Parallel using OpenMP:\t./bin/omp-cracker -fopenmp OMP_NUM_THREADS=[number_of_threads] -d [path] -p [password_hash]\n");
+
+    printf("\n");
+
+    printf("\"Brute Force Attack\" Usage:\n");
+    printf("   Run Serial:\t\t\t./bin/serial-cracker -b [character_arguments] -p [password_hash]\n");
+    printf("   Run Parallel using MPI:\t./bin/mpi-cracker -np [number_of_processes] -b [character_arguments] -p [password_hash]\n");
+    printf("   Run Parallel using OpenMP:\t./bin/omp-cracker -fopenmp OMP_NUM_THREADS=[number_of_threads] -b [character_arguments] -p [password_hash]\n");
+
+    printf("\nArguments:\n");
+    printf("   -d <path>\t(or:  --dictionary)\tRun a Dictionary Attack using file located at <path>\n");
+    printf("   -p <hash>\t(or:  --password)\tThe hashed password value\n");
+    printf("   -b\t\t(or:  --bruteforce)\tRun a Bruce Force Attack\n");
+    printf("   -l\t\t(or:  --lowercase)\tIncludes lowercase letters in brute force attack\n");
+    printf("   -u\t\t(or:  --uppercase)\tIncludes uppercase letters in brute force attack\n");
+    printf("   -n\t\t(or:  --numbers)\tIncludes numerical digits in brute force attack\n");
+    printf("   -s\t\t(or:  --symbols)\tIncludes symbol characters in brute force attack\n");
+    printf("   -v\t\t(or:  --verbose)\tBe verbose with output (Recommended for debugging small data only)\n");
+    printf("   -h\t\t(or:  --help)\t\tPrint Help (this message) and exit\n");
+
+    printf("\n");
+
 }
 
 int main(int argc, char **argv)
@@ -38,13 +69,14 @@ int main(int argc, char **argv)
                 {"lowercase", no_argument, 0, 'l'},
                 {"numbers", no_argument, 0, 'n'},
                 {"symbols", optional_argument, 0, 's'},
-                {"character-length", required_argument, 0, 'c'}
+                {"character-length", required_argument, 0, 'c'},
+                {"help", no_argument, 0, 'h'}
             };
 
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "vp:d:bulns::c:", long_options, &option_index);
+        c = getopt_long(argc, argv, "hvp:d:bulns::c:", long_options, &option_index);
 
         /* Detect the end of the options. */
         if (c == -1)
@@ -52,48 +84,51 @@ int main(int argc, char **argv)
 
         switch (c)
         {
-        case 'v':
-            verbose_flag=1;
-            break;
-        case 'p':
-            strcpy(password_hash,optarg);
-            break;
-        case 'd':
-            dictionary_flag=1;
-            strcpy(dictionary_path,optarg);
-            break;
-        case 'b':
-            bruteforce_flag=1;
-            break;
-        case 'u':
-            strcat(bruteforce_characters, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            break;
-        case 'l':
-            strcat(bruteforce_characters, "abcdefghijklmnopqrstuvwxyz");
-            break;
-        case 'n':
-            strcat(bruteforce_characters, "0123456789");
-            break;
-        case 's':
-            if(optarg == NULL)
-            {
-                // TODO?:  Does % in this string need to be escaped? E.g., %% or is it just the editor picking up on this?
-                strcat(bruteforce_characters, "~!@#$%^&*()_+");
-            } 
-            else 
-            {
-                strcat(bruteforce_characters, optarg);
-            }
-            break;
-        case 'c':
-            character_length = atoi(optarg);
-            break;
-        case '?':
-            help();
-            break;
+            case 'h':
+                help();
+                return(0); // TODO: is there a preferred return value here?
+            case 'v':
+                verbose_flag=1;
+                break;
+            case 'p':
+                strcpy(password_hash,optarg);
+                break;
+            case 'd':
+                dictionary_flag=1;
+                strcpy(dictionary_path,optarg);
+                break;
+            case 'b':
+                bruteforce_flag=1;
+                break;
+            case 'u':
+                strcat(bruteforce_characters, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+                break;
+            case 'l':
+                strcat(bruteforce_characters, "abcdefghijklmnopqrstuvwxyz");
+                break;
+            case 'n':
+                strcat(bruteforce_characters, "0123456789");
+                break;
+            case 's':
+                if(optarg == NULL)
+                {
+                    // TODO?:  Does % in this string need to be escaped? E.g., %% or is it just the editor picking up on this?
+                    strcat(bruteforce_characters, "~!@#$%^&*()_+");
+                } 
+                else 
+                {
+                    strcat(bruteforce_characters, optarg);
+                }
+                break;
+            case 'c':
+                character_length = atoi(optarg);
+                break;
+            case '?':
+                help();
+                break;
 
-        default:
-            abort();
+            default:
+                abort();
         }
     }
 
