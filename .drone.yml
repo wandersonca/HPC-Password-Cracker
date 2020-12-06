@@ -2,22 +2,21 @@ kind: pipeline
 type: docker
 name: test
 steps:
-- name: build-serial
-  image: gcc:4.9
-  commands:
-  - make serial
-- name: test-serial
-  image: gcc:4.9
-  commands:
-  - ./bin/serial-cracker -bl -c 4 -p $(echo -n 'test' | sha256sum) --verbose
-  - ./bin/serial-cracker -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum)
-steps:
-- name: build-mpi
-  image: ashael/openmpi
-  commands:
-  - make mpi
-- name: test-mpi
-  image: ashael/openmpi
-  commands:
-  - mpirun -np 4 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v
-  - mpirun -np 4 ./bin/mpi-cracker -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum) -v
+  - name: build-serial
+    image: gcc:4.9
+    commands:
+    - make serial
+  - name: test-serial
+    image: gcc:4.9
+    commands:
+    - ./bin/serial-cracker -bl -c 4 -p $(echo -n 'test' | sha256sum) --verbose
+    - ./bin/serial-cracker -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum)
+  - name: build-mpi
+    image: ashael/openmpi
+    commands:
+    - make mpi
+  - name: test-mpi
+    image: ashael/openmpi
+    commands:
+    - mpirun -np 4 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v
+    - mpirun -np 4 ./bin/mpi-cracker -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum) -v

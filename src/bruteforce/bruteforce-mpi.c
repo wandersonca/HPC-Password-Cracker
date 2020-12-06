@@ -1,9 +1,3 @@
-/*
-** @Author: Ma Luo
-** @Date: Nov 29,2020
-** @MPI version: 
-*/
-
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,23 +8,15 @@
 
 int bruteforce_crack(char *password_hash, char *characters, int password_max_length, int verbose)
 {
-  int my_rank;       /* rank of process      */
-  int p;             /* number of processes  */
-  int source;        /* rank of sender       */
-  int dest;          /* rank of receiver     */
-  int tag = 0;       /* tag for messages     */
-  char message[100]; /* storage for message  */
-  MPI_Status status; /* status for receive   */
-  long possibilities_local = 0;
+  // MPI Setup
+  int my_rank;
+  int p;
+  int source;
+  int dest;
+  MPI_Status status;
   int number_of_characters = 0;
-
-  /* Start up MPI */
   MPI_Init(NULL, NULL);
-
-  /* Find out process rank  */
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-
-  /* Find out number of processes */
   MPI_Comm_size(MPI_COMM_WORLD, &p);
 
   static unsigned char buffer[65];
@@ -44,59 +30,45 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
     printf("Calculating to a length of %d\n", password_max_length);
   }
 
-  int i, j, k; //Individually working on each process here
+  int i, j, k, result;
+  result = 1;
   for (i = 1; i <= password_max_length; i++)
   {
-    long possibilities = (long)pow(number_of_characters, i);
-    /*Split up the chunk by inexing*/
-    int stepSize = (int)(possibilities / p);
-    int startIndex = my_rank * stepSize;
-    int endIndex = startIndex + stepSize;
-    if ((p - my_rank) == 1)
-      endIndex += possibilities % endIndex;
-
-    if (verbose)
-    {
-      printf("Rank %d is calculating password length of %d, with %ld possibilities [%d to %d]\n", my_rank, i, possibilities, startIndex, endIndex);
-    }
-
-    char passwordToTest[i];
-    for (j = startIndex; j < endIndex; j++) //Split to n/p processes here
-    {
-      strcpy(passwordToTest, "");
-      int val = j;
-      for (k = 0; k < i; k++)
+      long possibilities = (long)pow(number_of_characters, i);
+      if (verbose && my_rank == 0)
       {
-        passwordToTest[k] = characters[val % number_of_characters];
-        val = val / number_of_characters;
+          printf("Now calculating password length of %d, it has %ld possibilities\n", i, possibilities);
       }
-      hash(passwordToTest, buffer);
-      if (!strcmp(password_hash, buffer))
+      char passwordToTest[i+1];
+      for (j = my_rank; j < possibilities; j+=p)
       {
-        printf("Password found: %s\n", passwordToTest);
-        return 0;
+          strcpy(passwordToTest, "");
+          int val = j;
+          for (k = 0; k < i; k++)
+          {
+              passwordToTest[k] = characters[val % number_of_characters];
+              val = val / number_of_characters;
+          }
+          passwordToTest[i]='\0';
+          hash(passwordToTest, buffer);
+          if (!strcmp(password_hash, buffer))
+          {
+              printf("Password found: %s\n", passwordToTest);
+              result = 0;
+          }
       }
-    }
   }
 
-  // if (my_rank != 0)
-  // {
-  //   sprintf(message, "Greetings from process %d!", my_rank);
-  //   dest = 0;
-  //   MPI_Send(message, strlen(message) + 1, MPI_CHAR, dest, tag, MPI_COMM_WORLD); /* Use strlen+1 so that '\0' gets transmitted */
-  // }
+  MPI_Barrier(MPI_COMM_WORLD);
+  int final_result;
+  //MPI_Reduce(&result, &final_result, 1, MPI_Int, MPI_MAX, 0, MPI_COMM_WORLD);
+  MPI_Allreduce(&result, &final_result, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
 
-  // else
-  // { /* my_rank == 0 */
-  //   for (source = 1; source < p; source++)
-  //   {
-  //     MPI_Recv(message, 100, MPI_CHAR, source, tag, MPI_COMM_WORLD, &status);
-  //     printf("%s\n", message);
-  //   }
-  // }
-
-  /* Shut down MPI */
+  // Shutdown MPI
   MPI_Finalize();
-
-  return 0;
+  if (final_result && my_rank == 0)
+  {
+      printf("Password not found.\n");
+  }
+  return final_result;
 }
