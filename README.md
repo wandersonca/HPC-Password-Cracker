@@ -11,7 +11,7 @@ The HPC Password Cracker project is an educational exploration of various parall
 1. Be certain to install the libssl-dev package prior to compilation.
 On Ubuntu: ``sudo apt-get install libssl-dev``
 
-2. Run ``make clean`` between implementations to ensure the appropriate binaries are available for each individual impelemtation.
+2. Run ``make clean`` between implementations to ensure the appropriate binaries are available for each individual implementation.
 
 ## Serial Implementation
 
