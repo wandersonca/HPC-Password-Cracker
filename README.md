@@ -27,6 +27,9 @@ or using short option names:
 
 ``mpirun -np 4 ./bin/mpi-cracker -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum) -v``
 
+## Install MPI on Ubuntu
+ Run from command line: ``sudo apt install libopenmpi-dev``
+
 ## Authors
 * Donna Harris
 * Ma Luo
