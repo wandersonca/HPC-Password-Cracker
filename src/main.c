@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     int bruteforce_flag = 0;
     int dictionary_flag = 0;
     int character_length = 4;
-    char password_hash[64] = "";
+    char password_hash[65] = "";
     char bruteforce_characters[256] = "";
     char dictionary_path[256] = "";
 
@@ -108,10 +108,6 @@ int main(int argc, char **argv)
     if(bruteforce_flag) 
     {
         result = bruteforce_crack(password_hash, bruteforce_characters, character_length, verbose_flag);
-    }
-    if (result) 
-    {
-        printf("Password not found :(\n");
     }
     exit(result);
 }
