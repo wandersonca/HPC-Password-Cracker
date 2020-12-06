@@ -10,13 +10,14 @@ int remove_new_line(char *input, char **output)
 
     if(input[len-1] == '\n')
     {
-        *output = (char*)malloc(sizeof(char)*(len-1));
-        strncpy(*output, input, len-1);
+        input[len-1] = '\0';
+        *output = (char*)malloc(sizeof(char)*(len));
+        strncpy(*output, input, len);
     }
     else
     {
-        *output = (char*)malloc(sizeof(char)*(len-1));
-        strncpy(*output, input, len);
+        *output = (char*)malloc(sizeof(char)*(len+1));
+        sprintf(*output, "%s\0", input);
     }
     
     return 0;
