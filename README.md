@@ -15,7 +15,7 @@ On Ubuntu: ``sudo apt-get install libssl-dev``
 
 ## Serial Implementation
 
-### How to compile
+### How to compile:
 Run make: ``make serial``
 
 ### How to run dictionary attack:
@@ -39,27 +39,29 @@ Provide the number of lines per file. (E.g., With 4 processes, we will need 4 fi
 
 ``split -d -l 25 dictionary_files/100_pass.txt temp/file_``
 
-### How to compile
+### How to compile:
 Run make: ``make parallel``
 
-### How to run MPI version:
-``mpirun -np 4 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
-
+### How to run dictionary attack:
 Pass in the "temp" directory for the location of the split files to be processed across processes.
 
 ``mpirun -np 4 ./bin/mpi-cracker -d temp -p $(echo -n '123456' | sha256sum) -v``
 
+### How to run brute force attack:
+``mpirun -np 4 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
+
 ## Parallel Implementation - OpenMP
 
-### How to compile OpenMP version
+### How to compile:
 Run make: ``make omp``
 
-### How to run OpenMP version:
-``gcc -fopenmp NUM_OF_THREADS=4 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
-
+### How to run dictionary attack:
 Pass in the "temp" directory for the location of the split files to be processed across processes.
 
 ``gcc --fopenmp NUM_OF_THREADS=4 ./bin/mpi-cracker -d temp -p $(echo -n '123456' | sha256sum) -v``
+
+### How to run brute force attack:
+``gcc -fopenmp NUM_OF_THREADS=4 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
 
 ## Authors
 * Donna Harris
