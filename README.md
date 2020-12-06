@@ -58,10 +58,10 @@ Run make: ``make omp``
 ### How to run dictionary attack:
 Pass in the "temp" directory for the location of the split files to be processed across processes.
 
-``gcc --fopenmp NUM_OF_THREADS=4 ./bin/mpi-cracker -d temp -p $(echo -n '123456' | sha256sum) -v``
+``gcc --fopenmp NUM_OF_THREADS=4 ./bin/omp-cracker -d temp -p $(echo -n '123456' | sha256sum) -v``
 
 ### How to run brute force attack:
-``gcc -fopenmp NUM_OF_THREADS=4 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
+``gcc -fopenmp NUM_OF_THREADS=4 ./bin/omp-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
 
 ## Authors
 * Donna Harris

@@ -30,8 +30,8 @@ void help()
     printf("   Run Parallel using OpenMP:\t./bin/omp-cracker -fopenmp OMP_NUM_THREADS=[number_of_threads] -b [character_arguments] -p [password_hash]\n");
 
     printf("\nArguments:\n");
-    printf("   -d <path>\t(or:  --dictionary)\tRun a Dictionary Attack using file located at <path>\n");
     printf("   -p <hash>\t(or:  --password)\tThe hashed password value\n");
+    printf("   -d <path>\t(or:  --dictionary)\tRun a Dictionary Attack using file located at <path>\n");
     printf("   -b\t\t(or:  --bruteforce)\tRun a Bruce Force Attack\n");
     printf("   -l\t\t(or:  --lowercase)\tIncludes lowercase letters in brute force attack\n");
     printf("   -u\t\t(or:  --uppercase)\tIncludes uppercase letters in brute force attack\n");
