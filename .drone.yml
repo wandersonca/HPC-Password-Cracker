@@ -3,20 +3,22 @@ type: docker
 name: test
 steps:
   - name: build-serial
-    image: gcc:4.9
+    image: wandersonca/gcc
     commands:
     - make serial
   - name: test-serial
-    image: gcc:4.9
+    image: wandersonca/gcc
     commands:
     - ./bin/serial-cracker -bl -c 4 -p $(echo -n 'test' | sha256sum) --verbose
     - ./bin/serial-cracker -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum)
   - name: build-mpi
-    image: ashael/openmpi
+    image: wandersonca/mpi
     commands:
     - make mpi
   - name: test-mpi
-    image: ashael/openmpi
+    image: wandersonca/mpi
     commands:
-    - mpirun -np 4 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v
-    - mpirun -np 4 ./bin/mpi-cracker -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum) -v
+    - mpirun --allow-run-as-root -np 4 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v
+    - mkdir -p temp
+    - split -d -l 25 dictionary_files/100_pass.txt temp/file_
+    - mpirun --allow-run-as-root -np 4 ./bin/mpi-cracker -d temp -p $(echo -n '123456' | sha256sum) -v
