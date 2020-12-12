@@ -11,23 +11,23 @@ void help()
     printf("\n__HPC Password Cracker Help__\n\n");
 
     printf("General Usage:\n");
-    printf("   Run Serial:\t\t\t./bin/serial-cracker [attack_type] [attack_settings] -p [password_hash]\n");
-    printf("   Run Parallel using MPI:\t./bin/mpi-cracker -np [number_of_processes] [attack_type] [attack_settings] -p [password_hash]\n");
-    printf("   Run Parallel using OpenMP:\t./bin/omp-cracker -fopenmp OMP_NUM_THREADS=[number_of_threads] [attack_type] [attack_settings] -p [password_hash]\n");
+    printf("   Run Serial:\t\t\t serial-cracker [attack_type] [attack_settings] -p [password_hash]\n");
+    printf("   Run Parallel using MPI:\t mpi-cracker -np [number_of_processes] [attack_type] [attack_settings] -p [password_hash]\n");
+    printf("   Run Parallel using OpenMP:\t omp-cracker -fopenmp OMP_NUM_THREADS=[number_of_threads] [attack_type] [attack_settings] -p [password_hash]\n");
 
     printf("\n");    
     
     printf("\"Dictionary Attack\" Usage:\n");
-    printf("   Run Serial:\t\t\t./bin/serial-cracker -d [path] -p [password_hash]\n");
-    printf("   Run Parallel using MPI:\t./bin/mpi-cracker -np [number_of_processes] -d [path] -p [password_hash]\n");
-    printf("   Run Parallel using OpenMP:\t./bin/omp-cracker -fopenmp OMP_NUM_THREADS=[number_of_threads] -d [path] -p [password_hash]\n");
+    printf("   Run Serial:\t\t\t serial-cracker -d [path] -p [password_hash]\n");
+    printf("   Run Parallel using MPI:\t mpi-cracker -np [number_of_processes] -d [path] -p [password_hash]\n");
+    printf("   Run Parallel using OpenMP:\t omp-cracker -fopenmp OMP_NUM_THREADS=[number_of_threads] -d [path] -p [password_hash]\n");
 
     printf("\n");
 
     printf("\"Brute Force Attack\" Usage:\n");
-    printf("   Run Serial:\t\t\t./bin/serial-cracker -b [character_arguments] -p [password_hash]\n");
-    printf("   Run Parallel using MPI:\t./bin/mpi-cracker -np [number_of_processes] -b [character_arguments] -p [password_hash]\n");
-    printf("   Run Parallel using OpenMP:\t./bin/omp-cracker -fopenmp OMP_NUM_THREADS=[number_of_threads] -b [character_arguments] -p [password_hash]\n");
+    printf("   Run Serial:\t\t\t serial-cracker -b [character_arguments] -p [password_hash]\n");
+    printf("   Run Parallel using MPI:\t mpi-cracker -np [number_of_processes] -b [character_arguments] -p [password_hash]\n");
+    printf("   Run Parallel using OpenMP:\t omp-cracker -fopenmp OMP_NUM_THREADS=[number_of_threads] -b [character_arguments] -p [password_hash]\n");
 
     printf("\nArguments:\n");
     printf("   -p <hash>\t(or:  --password)\tThe hashed password value\n");

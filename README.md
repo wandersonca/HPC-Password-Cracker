@@ -1,8 +1,9 @@
 # HPC Password Cracker
 [![Build Status](https://cloud.drone.io/api/badges/wandersonca/HPC-Password-Cracker/status.svg)](https://cloud.drone.io/wandersonca/HPC-Password-Cracker)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Purpose
-The HPC Password Cracker project is an educational exploration of various parallel implementations of two common password cracking approaches. Passwords values provided at the command line are expected to be hashed values using sha256sum encryption.
+The HPC Password Cracker project is a password cracker that supports OpenMPI, Open MP technologies. Passwords values provided at the command line are expected to be hashed values using sha256sum encryption. 
 
 ## How to hash a password for testing
 ``echo -n 'test' | sha256sum``
@@ -40,7 +41,7 @@ Provide the number of lines per file. (E.g., With 4 processes, we will need 4 fi
 ``split -d -l 25 dictionary_files/100_pass.txt temp/file_``
 
 ### How to compile:
-Run make: ``make parallel``
+Run make: ``make mpi``
 
 ### How to run dictionary attack:
 Pass in the "temp" directory for the location of the split files to be processed across processes.
