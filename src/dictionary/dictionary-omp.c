@@ -23,7 +23,6 @@ int dictionary_crack(char* password_hash, char *dictionary_path, int verbose)
 
     printf("\n>>> Using dictionary path: %s\n\n", dictionary_path);
 
-    //hash(password_hash, password_buffer);
     if(verbose) 
     {
         printf("---------------------------------------------------------------------------------------------------------------------------------\n");
