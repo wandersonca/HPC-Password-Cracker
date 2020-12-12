@@ -23,7 +23,6 @@ int dictionary_crack(char* password_hash, char *dictionary_path, int verbose)
 
     printf("\n>>> Using dictionary path: %s\n\n", dictionary_path);
 
-    //hash(password_hash, password_buffer);
     if(verbose) 
     {
         printf("---------------------------------------------------------------------------------------------------------------------------------\n");
@@ -39,7 +38,8 @@ int dictionary_crack(char* password_hash, char *dictionary_path, int verbose)
   	while ((read = getline(&line, &len, file)) != -1)
     {
         char *candidate_buffer = NULL;
-        remove_new_line(line, &candidate_buffer);     
+        remove_new_line(line, &candidate_buffer);   
+
         #pragma omp task firstprivate(candidate_buffer)
         {
             unsigned char candidate_hash[65];
@@ -63,6 +63,11 @@ int dictionary_crack(char* password_hash, char *dictionary_path, int verbose)
     fclose(file);
 
     printf("\n");
+
+    if (result)
+    {
+        printf("Password not found.\n");
+    }
 
     return result;
 }

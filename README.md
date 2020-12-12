@@ -20,6 +20,8 @@ On Ubuntu: ``sudo apt-get install libssl-dev``
 Run make: ``make serial``
 
 ### How to run dictionary attack:
+Pass in the full path of the dictionary file.
+
 ``./bin/serial-cracker --dictionary dictionary_files/100_pass.txt --password $(echo -n '123456' | sha256sum) --verbose``
 
 or using short option names:
@@ -57,12 +59,12 @@ Pass in the "temp" directory for the location of the split files to be processed
 Run make: ``make omp``
 
 ### How to run dictionary attack:
-Pass in the "temp" directory for the location of the split files to be processed across processes.
+Pass in the full path of the dictionary file.
 
-``gcc --fopenmp NUM_OF_THREADS=4 ./bin/omp-cracker -d temp -p $(echo -n '123456' | sha256sum) -v``
+``OMP_NUM_THREADS=4 ./bin/omp-cracker -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum) -v``
 
 ### How to run brute force attack:
-``gcc -fopenmp NUM_OF_THREADS=4 ./bin/omp-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
+``OMP_NUM_THREADS=4 ./bin/omp-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
 
 ## Authors
 * Donna Harris
