@@ -62,6 +62,7 @@ int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
 
   static unsigned char candidate_hash[64];
 
+  int result = 1;
   FILE *file;
   char *line = NULL;
   char *candidate_buffer = NULL;
@@ -107,10 +108,7 @@ int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
     if (!strcmp(password_hash, candidate_hash))
     {
       printf("\n%d: SUCCESS!!\tPassword found: %s\n", my_rank, candidate_buffer);
-
-      free(candidate_buffer);
-      fclose(file);
-      return 0;
+      result = 0;
     }
 
     free(candidate_buffer);
@@ -120,8 +118,15 @@ int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
 
   printf("\n");
 
-  /* Shut down MPI */
-  MPI_Finalize();
+  MPI_Barrier(MPI_COMM_WORLD);
+  int final_result;
+  MPI_Allreduce(&result, &final_result, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
 
-  return 1;
+  // Shutdown MPI
+  MPI_Finalize();
+  if (final_result && my_rank == 0)
+  {
+      printf("Password not found.\n");
+  }
+  return final_result;
 }
