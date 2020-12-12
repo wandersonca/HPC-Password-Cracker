@@ -83,7 +83,7 @@ int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
   }
 
-  printf("\n>>> Using dictionary path: %s\n\n", dictionary_file);
+  printf("\nProcess %d >>> Using dictionary path: %s\n\n", my_rank, dictionary_file);
 
   if (verbose)
   {
