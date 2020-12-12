@@ -16,6 +16,8 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
     int dest;
     MPI_Status status;
     int number_of_characters = 0;
+    int result = 0, final_result = 0;
+
     MPI_Init(NULL, NULL);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &p);
@@ -31,5 +33,18 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
         printf("Calculating to a length of %d\n", password_max_length);
     }
     
-    bruteforce_crack_main(password_hash, characters, password_max_length, verbose, my_rank, p);
+    if (final_result == 0)
+    {
+        result = bruteforce_crack_sub(password_hash, characters, password_max_length, verbose, my_rank, p);
+        MPI_Barrier(MPI_COMM_WORLD); //This would wait for all the results then do an all reduce.
+        MPI_Allreduce(&result, &final_result, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
+    }
+    // Shutdown MPI
+    MPI_Finalize();
+    if (final_result && my_rank == 0)
+    {
+        printf("Password not found overall.\n");
+    }
+    //if(final_result > 0) {return 2;}
+    // bruteforce_crack_main(password_hash, characters, password_max_length, verbose, my_rank, p);
 }

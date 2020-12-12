@@ -6,30 +6,12 @@
 #include <mpi.h>
 
 // Add any common functionality here...
-int bruteforce_crack_main(char *password_hash, char *characters, int password_max_length, int verbose, int my_rank, int p)
-{
-    int result, final_result;
-
-    result  = bruteforce_crack_sub(password_hash, characters, password_max_length, verbose, my_rank, p);
-
-    MPI_Barrier(MPI_COMM_WORLD);
-
-    MPI_Allreduce(&result, &final_result, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
-
-    // Shutdown MPI
-    MPI_Finalize();
-    if (final_result && my_rank == 0)
-    {
-        printf("Password not found overall.\n");
-    }
-    return final_result;
-}
 
 int bruteforce_crack_sub(char *password_hash, char *characters, int password_max_length, int verbose, int my_rank, int p){
     static unsigned char buffer[65];
     int number_of_characters = strlen(characters);
     int i, j, k, result, found, final_result;
-    result = 1;//By defualt it is one
+    result = 0;//By defualt it is one
     found = 0;
 
     for (i = 1; i <= password_max_length; i++)
@@ -44,7 +26,8 @@ int bruteforce_crack_sub(char *password_hash, char *characters, int password_max
         {
 
             //Give a counter check here and call MPI_Allreduce if meet
-            
+            //Give a stop flag and continue the next part only if we have results checked.
+
             strcpy(passwordToTest, "");
             int val = j;
             for (k = 0; k < i; k++)
@@ -57,7 +40,7 @@ int bruteforce_crack_sub(char *password_hash, char *characters, int password_max
             if (!strcmp(password_hash, buffer))
             {
                 printf("Password found: %s at rank %d\n", passwordToTest, my_rank);
-                result = 0; //If found returns 0
+                result = 1; //If found returns 0
                 found = 1;
             }
         }
