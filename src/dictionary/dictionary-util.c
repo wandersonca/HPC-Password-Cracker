@@ -1,6 +1,5 @@
 #include "dictionary.h"
 
-#define FILE_PREFIX "file_0" // TODO: change so 10+ supported
 
 /* 
     remove_new_line()
@@ -39,22 +38,8 @@ void return_password_text(char *input, char **output)
 
     *output = (char *)malloc(sizeof(char) * len);
     memcpy(*output, input, len);
-}
 
-/* 
-    set_mpi_dictionary_filename()
-        - sets the name of the MPI dictionary filename for a given process
-
-        dictionary_path:    the directory where the split files are located
-        rank:               the process rank (needed for the file selection)
-        filename:           the filename for this process to work, including the full path
-*/
-void set_mpi_dictionary_filename(char *dictionary_path, int rank, char **filename)
-{
-    int filename_length = strlen(dictionary_path) + 1;
-
-    *filename = (char *)malloc(sizeof(char) * (filename_length));
-    sprintf(*filename, "%s/%s%d\0", dictionary_path, FILE_PREFIX, rank);
+    // TODO: fix the printing problem with the MPI *output value. Often has extra junk. But the comparison is accurate.
 }
 
 /* 
@@ -209,29 +194,57 @@ void compare_candidates(FILE **file, char *password_hash, int mode, int verbose,
     size_t len = 0;
     ssize_t read;
 
+    int count = 0;  /* for implementations that require a counter */
+
     while ((read = getline(&line, &len, *file)) != -1)
     {
         char *candidate_buffer = NULL;
         remove_new_line(line, &candidate_buffer);
      
-        if(mode == OMP)
+        switch(mode)
         {
-            #pragma omp task firstprivate(candidate_buffer)
-            {
+            case SERIAL:
                 do_comparison(password_hash, candidate_buffer, verbose, result, password_text);
 
-                // IF FOUND ... get out!
-            }
-        }
-        else // SERIAL for sure, MPI for now...
-        {
-            do_comparison(password_hash, candidate_buffer, verbose, result, password_text);
+                if(*result == FOUND)
+                    return;
 
-            if(*result == FOUND)
-                return;
+                break;
 
-        }
-        
+            case MPI:
+                /* First check if it is already FOUND, and return if FOUND */
+                if(count == MPI_COUNT_LIMIT)
+                {
+                    if( mpi_result_check(NOT_FOUND) == FOUND)
+                        return;
+
+                    count = 0;
+                }
+
+                /* if NOT_FOUND, keep looking */
+                do_comparison(password_hash, candidate_buffer, verbose, result, password_text);
+                count++;
+
+                /* This STOPS the processing of the file on the process that FOUND the password */
+                if(*result == FOUND)
+                {
+                    /* report back that the match is found */
+                    mpi_result_check(FOUND);
+                    return;
+                }
+
+                break;
+
+            case OMP:            
+                #pragma omp task firstprivate(candidate_buffer)
+                {
+                    do_comparison(password_hash, candidate_buffer, verbose, result, password_text);
+
+                    if(*result == FOUND)
+                        printf("We've got OMP things to do, Miss Donna!\n");
+                }
+                break;
+        }        
     }
 }
 

@@ -15,6 +15,10 @@
 #define CUDA    3
 #define HYBRID  4
 
+/* how often an MPI process checks to see if a result is already found */
+#define MPI_COUNT_LIMIT 20
+
+
 int dictionary_crack(char *password_hash, char *dictionary_path, int verbose);
 
 void remove_new_line(char *input, char **output);
