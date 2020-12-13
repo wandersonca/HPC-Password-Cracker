@@ -8,7 +8,7 @@
 
 #define N 10
 #define BUF_SIZE 80
-#define FILE_PREFIX "file_0" 
+#define FILE_PREFIX "file_" 
 
 
 int dictionary_crack(char *password_hash, char *dictionary_path, int verbose);
@@ -112,7 +112,14 @@ void set_mpi_dictionary_filename(char *dictionary_path, int rank, char **filenam
     int filename_length = strlen(dictionary_path) + 1;
 
     *filename = (char *)malloc(sizeof(char) * (filename_length));
-    sprintf(*filename, "%s/%s%d\0", dictionary_path, FILE_PREFIX, rank);
+    if(rank<10) 
+    {
+      sprintf(*filename, "%s/%s0%d\0", dictionary_path, FILE_PREFIX, rank);
+    }
+    else 
+    {
+      sprintf(*filename, "%s/%s%d\0", dictionary_path, FILE_PREFIX, rank);
+    }
 }
 
 
