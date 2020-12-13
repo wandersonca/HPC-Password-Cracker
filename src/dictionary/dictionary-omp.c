@@ -6,68 +6,102 @@
 #include "../hash/hash.h"
 #include "dictionary-util.c"
 
-int dictionary_crack(char* password_hash, char *dictionary_path, int verbose)
+
+int dictionary_crack(char *password_hash, char *dictionary_path, int verbose);
+
+void compare_candidates(FILE **file, char *password_hash, int verbose, int *result, char **password_text);
+
+
+/* 
+    dictionary_crack()
+        - OpenMP Implementation
+
+        password_hash:      hashed password string to crack
+        dictionary_path:    full path, including filename (OpenMP)
+        verbose:            set to 1 for verbose mode
+*/
+int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
 {
-    FILE *file;
-    char *line = NULL;
-	size_t len = 0;
-	ssize_t read;
- 
-	file = fopen(dictionary_path, "r");
-	if (file == NULL)
+    int result = NOT_FOUND;         /* default: match not found */
+    int file_failure = SUCCESS;     /* default: no failure */
+
+    char *password = NULL;
+
+    FILE *file = NULL;
+    open_dictionary_file(dictionary_path, &file, OMP, &file_failure);
+
+    if(verbose)
     {
-        printf("Error reading dictionary file: %s\n", dictionary_path);
-        printf("Exiting with error code %d.\n", EXIT_FAILURE);
-		exit(EXIT_FAILURE);
+        printf("\n>>> Using dictionary path: %s\n\n", dictionary_path);
+        print_password_hash(password_hash);
     }
 
-    printf("\n>>> Using dictionary path: %s\n\n", dictionary_path);
+    // #pragma omp parallel
+    //   #pragma omp single
+        compare_candidates(&file, password_hash, verbose, &result, &password);
 
-    if(verbose) 
-    {
-        printf("---------------------------------------------------------------------------------------------------------------------------------\n");
-        printf("Looking for this password:\t\t\t\t\t%s\n", password_hash);
-        printf("---------------------------------------------------------------------------------------------------------------------------------\n");
-        printf("\n");
-    }
+    close_dictionary_file(&file);
 
-    int result =1;
+    if(result == NOT_FOUND)
+        print_not_found(verbose);
+    else if(result == FOUND)
+        print_password_found(password, verbose);
 
-    #pragma omp parallel
-    #pragma omp single
-  	while ((read = getline(&line, &len, file)) != -1)
-    {
-        char *candidate_buffer = NULL;
-        remove_new_line(line, &candidate_buffer);   
-
-        #pragma omp task firstprivate(candidate_buffer)
-        {
-            unsigned char candidate_hash[65];
-            hash(candidate_buffer, candidate_hash); 
-
-            if(verbose) 
-            {
-                printf("Password candidate from file:\t%16s\t--->\t%s\n", candidate_buffer, candidate_hash);
-            }
-
-            if (!strcmp(password_hash, candidate_hash))
-            {
-                printf("\nSUCCESS!!\tPassword found: %s\n", candidate_buffer);
-                result = 0;
-            }        
-
-            free(candidate_buffer);
-        }
-    }
-
-    fclose(file);
-
-    printf("\n");
-
-    if (result)
-    {
-        printf("Password not found.\n");
-    }
+    free(password);
 
     return result;
+}
+
+int omp_result_check(int my_result)
+{
+  int result_check;
+  //MPI_Allreduce(&my_result, &result_check, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
+
+  //return result_check;
+  return NOT_FOUND;
+}
+
+
+/* 
+    compare_candidates()
+        - 1. manages iterating through the dictionary file and initiating the has comparisons
+        - 2. returns the result value (FOUND or NOT_FOUND) and the plain text password, if found
+
+        file:               pointer to the dictionary file in memory
+        password_hash:      hashed value of the password to be cracked
+        verbose:            set to 1 for verbose mode
+        result:             (output) FOUND or NOT_FOUND result
+        password_text:      (output) plain text of the discovered password
+
+*/
+void compare_candidates(FILE **file, char *password_hash, int verbose, int *result, char **password_text)
+{
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    #pragma omp parallel shared(result)
+    {
+      #pragma omp single
+      {
+        while ((read = getline(&line, &len, *file) != -1) && *result)
+        {
+            char *candidate_buffer = NULL;
+            remove_new_line(line, &candidate_buffer);
+        
+            #pragma omp task firstprivate(candidate_buffer)
+            {
+                if( *result == NOT_FOUND )
+                {
+                    /* if NOT_FOUND, keep looking */
+                    #pragma omp critcal
+                        do_comparison(password_hash, candidate_buffer, verbose, result, password_text);
+                }
+
+            } // end task
+
+        }  // end while
+
+      }
+    }
 }
