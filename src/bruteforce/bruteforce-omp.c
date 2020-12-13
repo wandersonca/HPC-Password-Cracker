@@ -32,6 +32,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
                 // found password early, break out!
                 return 0;
             }
+
             int nextStep;
             if (j + CHUNK_SIZE > possibilities) 
             {
