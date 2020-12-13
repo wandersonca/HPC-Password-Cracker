@@ -7,6 +7,8 @@
 #include "bruteforce-util.c"
 #include <mpi.h>
 
+#define CHUNKSIZE 100000
+
 int bruteforce_crack_sub(char *password_hash, char *characters, int password_max_length, int verbose, int my_rank, int p);
 
 int bruteforce_crack(char *password_hash, char *characters, int password_max_length, int verbose)
@@ -36,7 +38,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
     }
 
     result = bruteforce_crack_sub(password_hash, characters, password_max_length, verbose, my_rank, p);
-    
+
     MPI_Allreduce(&result, &final_result, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
 
     // Shutdown MPI
@@ -47,7 +49,6 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
     // }
     return 0;
 }
-
 
 int bruteforce_crack_sub(char *password_hash, char *characters, int password_max_length, int verbose, int my_rank, int p)
 {
@@ -73,7 +74,17 @@ int bruteforce_crack_sub(char *password_hash, char *characters, int password_max
                 printf("Found pass already...\n");
                 return 0; //Skip the next processes if we have found the result
             }
-            int nextStep = j + 100000;
+
+            int nextStep;
+            if (j + CHUNKSIZE > possibilities)
+            {
+                nextStep = possibilities;
+            }
+            else
+            {
+                nextStep = j + CHUNKSIZE;
+            }
+
             for (; j < nextStep; j += p)
             {
                 strcpy(passwordToTest, "");

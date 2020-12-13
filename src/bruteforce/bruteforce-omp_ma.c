@@ -6,6 +6,8 @@
 #include "../hash/hash.h"
 #include "bruteforce-util.c"
 
+#define CHUNKSIZE 100000
+
 int bruteforce_crack(char *password_hash, char *characters, int password_max_length, int verbose)
 {
     int number_of_characters = strlen(characters);
@@ -36,30 +38,33 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
                     printf("Found pass already...\n");
                     //return; //Skip the next processes if we have found the result
                 }
-                int nextStep = j + 100000;
-                int p = omp_get_thread_num();
-                printf("Rank: %d processing",p);
-                #pragma omp for schedule(auto)
-
-                for (j = j; j < nextStep; j += p)
+                else
                 {
-                    strcpy(passwordToTest, "");
-                    int val = j;
-                    for (k = 0; k < i; k++)
+                    int nextStep = j + CHUNKSIZE;
+// int p = omp_get_thread_num();
+// printf("Rank: %d processing\n",p);
+#pragma omp for schedule(auto)
+
+                    for (j = j; j < nextStep; j++)
                     {
-                        passwordToTest[k] = characters[val % number_of_characters];
-                        val = (int ) (val / number_of_characters);
-                    }
-                    passwordToTest[i] = '\0';
-                    hash(passwordToTest, buffer);
-                    if (!strcmp(password_hash, buffer))
-                    {
-#pragma omp critical
+                        strcpy(passwordToTest, "");
+                        int val = j;
+                        for (k = 0; k < i; k++)
                         {
-                            printf("Password found: %s\n", passwordToTest);
-                            result = 0;
+                            passwordToTest[k] = characters[val % number_of_characters];
+                            val = (int)(val / number_of_characters);
                         }
+                        passwordToTest[i] = '\0';
+                        hash(passwordToTest, buffer);
+                        if (!strcmp(password_hash, buffer))
+                        {
+#pragma omp critical
+                            {
+                                printf("Password found: %s\n", passwordToTest);
+                                result = 0;
+                            }
 #pragma omp cancel for
+                        }
                     }
                 }
             }
