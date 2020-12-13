@@ -7,11 +7,12 @@
 
 // Add any common functionality here...
 
-int bruteforce_crack_sub(char *password_hash, char *characters, int password_max_length, int verbose, int my_rank, int p){
+int bruteforce_crack_sub(char *password_hash, char *characters, int password_max_length, int verbose, int my_rank, int p)
+{
     static unsigned char buffer[65];
     int number_of_characters = strlen(characters);
     int i, j, k, result, found, final_result;
-    result = 0;//By defualt it is one
+    result = 0; //By defualt it is one
     found = 0;
 
     for (i = 1; i <= password_max_length; i++)
@@ -27,7 +28,15 @@ int bruteforce_crack_sub(char *password_hash, char *characters, int password_max
 
             //Give a counter check here and call MPI_Allreduce if meet
             //Give a stop flag and continue the next part only if we have results checked.
-
+            // if (j % 100000 == 0)
+            // {
+            //     //MPI_Barrier(MPI_COMM_WORLD);
+            //     MPI_Allreduce(&result, &final_result, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
+            //     if (final_result > 0)
+            //     {
+            //         return final_result;//Skip the next processes if we have found the result
+            //     }
+            // }
             strcpy(passwordToTest, "");
             int val = j;
             for (k = 0; k < i; k++)
