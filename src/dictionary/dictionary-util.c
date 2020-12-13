@@ -113,19 +113,20 @@ void open_dictionary_file(char *dictionary_path, FILE **file, int mode, int *fai
         switch(mode)
         {
             case SERIAL:
-                //*failure = FAILURE;   // Not needed, as the program exits
                 printf("Exiting with error code %d.\n", EXIT_FAILURE);
                 exit(EXIT_FAILURE);
                 break;
             case MPI:
                 *failure = FAILURE;
                 break;
-            case OMP:
+            case OMP:  // IF this works, it's the same as SERIAL... consolidate?
                 *failure = FAILURE;
-                exit(EXIT_FAILURE);        // IF this works, it's the same as SERIAL... consolidate?
+                printf("Exiting with error code %d.\n", EXIT_FAILURE);
+                exit(EXIT_FAILURE);        
                 break;
             default:
-                // nothing here?
+                printf("Unknown implementation mode provided. Exiting with error code %d.\n", EXIT_FAILURE);
+                exit(EXIT_FAILURE);     
                 break;
 
         }
@@ -174,77 +175,3 @@ void do_comparison(char *password_hash, char *candidate_buffer, int verbose, int
 
     }
 }
-
-/* 
-    compare_candidates()
-        - 1. manages iterating through the dictionary file and initiating the has comparisons
-        - 2. returns the result value (FOUND or NOT_FOUND) and the plain text password, if found
-
-        file:               pointer to the dictionary file in memory
-        password_hash:      hashed value of the password to be cracked
-        mode:               the implementation mode (SERIAL, MPI, OMP, etc.)
-        verbose:            set to 1 for verbose mode
-        result:             (output) FOUND or NOT_FOUND result
-        password_text:      (output) plain text of the discovered password
-
-*/
-void compare_candidates(FILE **file, char *password_hash, int mode, int verbose, int *result, char **password_text)
-{
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-
-    int count = 0;  /* for implementations that require a counter */
-
-    while ((read = getline(&line, &len, *file)) != -1)
-    {
-        char *candidate_buffer = NULL;
-        remove_new_line(line, &candidate_buffer);
-     
-        switch(mode)
-        {
-            case SERIAL:
-                do_comparison(password_hash, candidate_buffer, verbose, result, password_text);
-
-                if(*result == FOUND)
-                    return;
-
-                break;
-
-            case MPI:
-                /* First check if it is already FOUND, and return if FOUND */
-                if(count == MPI_COUNT_LIMIT)
-                {
-                    if( mpi_result_check(NOT_FOUND) == FOUND)
-                        return;
-
-                    count = 0;
-                }
-
-                /* if NOT_FOUND, keep looking */
-                do_comparison(password_hash, candidate_buffer, verbose, result, password_text);
-                count++;
-
-                /* This STOPS the processing of the file on the process that FOUND the password */
-                if(*result == FOUND)
-                {
-                    /* report back that the match is found */
-                    mpi_result_check(FOUND);
-                    return;
-                }
-
-                break;
-
-            case OMP:            
-                #pragma omp task firstprivate(candidate_buffer)
-                {
-                    do_comparison(password_hash, candidate_buffer, verbose, result, password_text);
-
-                    if(*result == FOUND)
-                        printf("We've got OMP things to do, Miss Donna!\n");
-                }
-                break;
-        }        
-    }
-}
-

@@ -15,6 +15,7 @@ int dictionary_crack(char *password_hash, char *dictionary_path, int verbose);
 
 void set_mpi_dictionary_filename(char *dictionary_path, int rank, char **filename);
 int mpi_check_if_found(int result);
+void compare_candidates(FILE **file, char *password_hash, int verbose, int *result, char **password_text);
 
 
 
@@ -60,7 +61,8 @@ int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
   if (file_failure)
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
 
-  compare_candidates(&file, password_hash, MPI, verbose, &result, &password);
+  //compare_candidates(&file, password_hash, MPI, verbose, &result, &password);
+  compare_candidates(&file, password_hash, verbose, &result, &password);
 
   close_dictionary_file(&file);
   free(dictionary_file_name);
@@ -115,3 +117,55 @@ void set_mpi_dictionary_filename(char *dictionary_path, int rank, char **filenam
     *filename = (char *)malloc(sizeof(char) * (filename_length));
     sprintf(*filename, "%s/%s%d\0", dictionary_path, FILE_PREFIX, rank);
 }
+
+
+
+
+/* 
+    compare_candidates()
+        - 1. manages iterating through the dictionary file and initiating the has comparisons
+        - 2. returns the result value (FOUND or NOT_FOUND) and the plain text password, if found
+
+        file:               pointer to the dictionary file in memory
+        password_hash:      hashed value of the password to be cracked
+        verbose:            set to 1 for verbose mode
+        result:             (output) FOUND or NOT_FOUND result
+        password_text:      (output) plain text of the discovered password
+
+*/
+void compare_candidates(FILE **file, char *password_hash, int verbose, int *result, char **password_text)
+{
+  char *line = NULL;
+  size_t len = 0;
+  ssize_t read;
+
+  int count = 0;  /* for implementations that require a counter */
+
+  while ((read = getline(&line, &len, *file)) != -1)
+  {
+    char *candidate_buffer = NULL;
+    remove_new_line(line, &candidate_buffer);
+
+    /* First check if it is already FOUND, and return if FOUND */
+    if(count == MPI_COUNT_LIMIT)
+    {
+        if( mpi_result_check(NOT_FOUND) == FOUND)
+            return;
+
+        count = 0;
+    }
+
+    /* if NOT_FOUND, keep looking */
+    do_comparison(password_hash, candidate_buffer, verbose, result, password_text);
+    count++;
+
+    /* This STOPS the processing of the file on the process that FOUND the password */
+    if(*result == FOUND)
+    {
+        /* report back that the match is found */
+        mpi_result_check(FOUND);
+        return;
+    }      
+  }
+}
+
