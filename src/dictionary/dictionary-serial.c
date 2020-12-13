@@ -69,8 +69,6 @@ void compare_candidates(FILE **file, char *password_hash, int verbose, int *resu
     size_t len = 0;
     ssize_t read;
 
-    int count = 0;  /* for implementations that require a counter */
-
     while ((read = getline(&line, &len, *file)) != -1)
     {
         char *candidate_buffer = NULL;
