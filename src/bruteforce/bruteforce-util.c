@@ -23,34 +23,31 @@ int bruteforce_crack_sub(char *password_hash, char *characters, int password_max
             printf("Now calculating password length of %d, it has %ld possibilities\n", i, possibilities);
         }
         char passwordToTest[i + 1];
-        for (j = my_rank; j < possibilities; j += p)
+        for (j = my_rank; j < possibilities;)
         {
-
-            //Give a counter check here and call MPI_Allreduce if meet
-            //Give a stop flag and continue the next part only if we have results checked.
-            // if (j % 100000 == 0)
-            // {
-            //     //MPI_Barrier(MPI_COMM_WORLD);
-            //     MPI_Allreduce(&result, &final_result, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
-            //     if (final_result > 0)
-            //     {
-            //         return final_result;//Skip the next processes if we have found the result
-            //     }
-            // }
-            strcpy(passwordToTest, "");
-            int val = j;
-            for (k = 0; k < i; k++)
+            MPI_Allreduce(&result, &final_result, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
+            if (final_result > 0)
             {
-                passwordToTest[k] = characters[val % number_of_characters];
-                val = val / number_of_characters;
+                return 0; //Skip the next processes if we have found the result
             }
-            passwordToTest[i] = '\0';
-            hash(passwordToTest, buffer);
-            if (!strcmp(password_hash, buffer))
+            int nextStep = j + 100000;
+            for (; j < nextStep; j += p)
             {
-                printf("Password found: %s at rank %d\n", passwordToTest, my_rank);
-                result = 1; //If found returns 0
-                found = 1;
+                strcpy(passwordToTest, "");
+                int val = j;
+                for (k = 0; k < i; k++)
+                {
+                    passwordToTest[k] = characters[val % number_of_characters];
+                    val = val / number_of_characters;
+                }
+                passwordToTest[i] = '\0';
+                hash(passwordToTest, buffer);
+                if (!strcmp(password_hash, buffer))
+                {
+                    printf("Password found: %s at rank %d\n", passwordToTest, my_rank);
+                    result = 1; //If found returns 0
+                    found = 1;
+                }
             }
         }
     }
