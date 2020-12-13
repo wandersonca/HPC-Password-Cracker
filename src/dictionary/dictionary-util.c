@@ -1,6 +1,5 @@
 #include "dictionary.h"
 
-#define FILE_PREFIX "file_0" // TODO: change so 10+ supported
 
 /* 
     remove_new_line()
@@ -39,22 +38,8 @@ void return_password_text(char *input, char **output)
 
     *output = (char *)malloc(sizeof(char) * len);
     memcpy(*output, input, len);
-}
 
-/* 
-    set_mpi_dictionary_filename()
-        - sets the name of the MPI dictionary filename for a given process
-
-        dictionary_path:    the directory where the split files are located
-        rank:               the process rank (needed for the file selection)
-        filename:           the filename for this process to work, including the full path
-*/
-void set_mpi_dictionary_filename(char *dictionary_path, int rank, char **filename)
-{
-    int filename_length = strlen(dictionary_path) + 1;
-
-    *filename = (char *)malloc(sizeof(char) * (filename_length));
-    sprintf(*filename, "%s/%s%d\0", dictionary_path, FILE_PREFIX, rank);
+    // TODO: fix the printing problem with the MPI *output value. Often has extra junk. But the comparison is accurate.
 }
 
 /* 
@@ -128,19 +113,20 @@ void open_dictionary_file(char *dictionary_path, FILE **file, int mode, int *fai
         switch(mode)
         {
             case SERIAL:
-                //*failure = FAILURE;   // Not needed, as the program exits
                 printf("Exiting with error code %d.\n", EXIT_FAILURE);
                 exit(EXIT_FAILURE);
                 break;
             case MPI:
                 *failure = FAILURE;
                 break;
-            case OMP:
+            case OMP:  // IF this works, it's the same as SERIAL... consolidate?
                 *failure = FAILURE;
-                exit(EXIT_FAILURE);        // IF this works, it's the same as SERIAL... consolidate?
+                printf("Exiting with error code %d.\n", EXIT_FAILURE);
+                exit(EXIT_FAILURE);        
                 break;
             default:
-                // nothing here?
+                printf("Unknown implementation mode provided. Exiting with error code %d.\n", EXIT_FAILURE);
+                exit(EXIT_FAILURE);     
                 break;
 
         }
@@ -189,49 +175,3 @@ void do_comparison(char *password_hash, char *candidate_buffer, int verbose, int
 
     }
 }
-
-/* 
-    compare_candidates()
-        - 1. manages iterating through the dictionary file and initiating the has comparisons
-        - 2. returns the result value (FOUND or NOT_FOUND) and the plain text password, if found
-
-        file:               pointer to the dictionary file in memory
-        password_hash:      hashed value of the password to be cracked
-        mode:               the implementation mode (SERIAL, MPI, OMP, etc.)
-        verbose:            set to 1 for verbose mode
-        result:             (output) FOUND or NOT_FOUND result
-        password_text:      (output) plain text of the discovered password
-
-*/
-void compare_candidates(FILE **file, char *password_hash, int mode, int verbose, int *result, char **password_text)
-{
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-
-    while ((read = getline(&line, &len, *file)) != -1)
-    {
-        char *candidate_buffer = NULL;
-        remove_new_line(line, &candidate_buffer);
-     
-        if(mode == OMP)
-        {
-            #pragma omp task firstprivate(candidate_buffer)
-            {
-                do_comparison(password_hash, candidate_buffer, verbose, result, password_text);
-
-                // IF FOUND ... get out!
-            }
-        }
-        else // SERIAL for sure, MPI for now...
-        {
-            do_comparison(password_hash, candidate_buffer, verbose, result, password_text);
-
-            if(*result == FOUND)
-                return;
-
-        }
-        
-    }
-}
-
