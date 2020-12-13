@@ -15,30 +15,25 @@
 */
 int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
 {
-    int result = NOT_FOUND;         /* default: match not found */
-    int file_failure = SUCCESS;     /* default: no failure */
-
-    char *password = NULL;
+    int result = 1; /* match not found */
+    int failure = 0;
 
     FILE *file = NULL;
-    open_dictionary_file(dictionary_path, &file, SERIAL, &file_failure);
+    open_dictionary_file(dictionary_path, &file, SERIAL, &failure);
 
     if( verbose )
-    {
         printf("\n>>> Using dictionary path: %s\n", dictionary_path);
-        print_password_hash(password_hash);
-    }
 
-    compare_candidates(&file, password_hash, SERIAL, verbose, &result, &password);
+    print_password_hash(password_hash);
+
+    compare_candidates(&file, password_hash, verbose, &result);
 
     close_dictionary_file(&file);
 
-    if(result == NOT_FOUND)
-        print_not_found(verbose);
-    else if(result == FOUND)
-        print_password_found(password, verbose);
+    if (result)
+        print_not_found();
 
-    free(password);
+    printf("\n");
 
     return result;
 }
