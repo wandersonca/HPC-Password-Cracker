@@ -21,7 +21,6 @@ char *hash(char *input, char outputBuffer[64])
 
 char *batch_hash(char *input, char *outputBuffer, int passwordLength, int batchSize)
 {
-    printf("%.*s length:%d batchSize:%d\n", passwordLength, input, passwordLength, batchSize);
     unsigned char hashArray[SHA256_DIGEST_LENGTH * batchSize];
     mcm_cuda_sha256_hash_batch(input, passwordLength, hashArray, batchSize);
     int i, j;
@@ -30,8 +29,7 @@ char *batch_hash(char *input, char *outputBuffer, int passwordLength, int batchS
         {
             sprintf(outputBuffer + (i* 65) + (j * 2), "%02x", hashArray[(i*SHA256_DIGEST_LENGTH) + j]);
         }
-        outputBuffer[(i+1)*64] = '\0';
-        printf("%s\n", outputBuffer);
+        outputBuffer[((i + 1) * 65)-1] = '\0';
     }
 }
 #endif //BUILD_CUDA
