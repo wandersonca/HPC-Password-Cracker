@@ -1,12 +1,10 @@
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <omp.h>
-#include "../hash/hash.h"
 #include "bruteforce-util.c"
-
-#define CHUNK_SIZE 100000
+#include "../hash/hash.h"
+#include "../globals.h"
 
 int bruteforce_crack(char *password_hash, char *characters, int password_max_length, int verbose)
 {
@@ -15,7 +13,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
     if (verbose)  print_stats(password_hash, characters, number_of_characters, password_max_length);
 
     // Program counters and flags
-    int result = 1;
+    int result = NOT_FOUND;
     int i, j;
 
     for (i = 1; i <= password_max_length && result > 0; i++)
@@ -44,7 +42,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
                         #pragma omp critical
                         {
                             printf("Password found: %s\n", passwordToTest);
-                            result = 0;
+                            result = FOUND;
                         }
                     }
                 }
@@ -54,7 +52,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
     }
 
     // Print not found result
-    if (result)
+    if (result == NOT_FOUND)
     {
         printf("Password not found.\n");
     }

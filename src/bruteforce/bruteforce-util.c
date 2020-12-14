@@ -1,7 +1,4 @@
 #include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 void print_stats(char *password_hash, char *characters, int number_of_characters, int password_max_length)
 {

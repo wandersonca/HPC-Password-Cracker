@@ -1,8 +1,8 @@
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../hash/hash.h"
+#include "../globals.h"
 #include "bruteforce-util.c"
 
 int bruteforce_crack(char *password_hash, char *characters, int password_max_length, int verbose)
@@ -15,7 +15,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
 
     // Program counters and flags
     int i, j, k, result;
-    result = 1;
+    result = NOT_FOUND;
 
     for (i = 1; i <= password_max_length; i++)
     {
@@ -30,14 +30,14 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
             if (!strcmp(password_hash, buffer))
             {
                 printf("Password found: %s\n", passwordToTest);
-                result = 0;
+                result = FOUND;
                 return result; // want to break out of these nested for loops...
             }
         }
     }
 
     // Print not found result
-    if (result)
+    if (result == NOT_FOUND)
     {
         printf("Password not found.\n");
     }

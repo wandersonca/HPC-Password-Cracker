@@ -1,12 +1,10 @@
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../hash/hash.h"
-#include "bruteforce-util.c"
 #include <mpi.h>
-
-#define CHUNK_SIZE 100000
+#include "bruteforce-util.c"
+#include "../hash/hash.h"
+#include "../globals.h"
 
 int bruteforce_crack(char *password_hash, char *characters, int password_max_length, int verbose)
 {
@@ -24,8 +22,8 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
 
     // Program counters and flags
     int i, j, k, result, collective_result;
-    result = 1;
-    collective_result = 1;
+    result = NOT_FOUND;
+    collective_result = NOT_FOUND;
 
     for (i = 1; i <= password_max_length && collective_result > 0; i++)
     {
@@ -53,7 +51,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
                 if (!strcmp(password_hash, buffer))
                 {
                     printf("Password found: %s\n", passwordToTest);
-                    result = 0;
+                    result = FOUND;
                 }
             }
         }
@@ -61,12 +59,12 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
 
     // Print not found result
     MPI_Allreduce(&result, &collective_result, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
-    if (collective_result && my_rank == 0)
+    if (collective_result == NOT_FOUND && my_rank == 0)
     {
         printf("Password not found.\n");
     }
     
     // Shutdown MPI
     MPI_Finalize();
-    return 0;
+    return FOUND;
 }
