@@ -81,5 +81,5 @@ int compare_candidates(FILE **file, char *password_hash, int verbose)
         } 
       }
     }
-    return NOT_FOUND;
+    return result;
 }
