@@ -7,33 +7,25 @@
 
 int bruteforce_crack(char *password_hash, char *characters, int password_max_length, int verbose)
 {
+    // Input Calculations
     static unsigned char buffer[65];
     int number_of_characters = strlen(characters);
+    if (verbose)
+        print_stats(password_hash, characters, number_of_characters, password_max_length);
 
-    printf("Brute force of hash: %s\n", password_hash);
-    printf("Using %d characters: %s\n", number_of_characters, characters);
-    printf("Calculating to a length of %d\n", password_max_length);
-
+    // Program counters and flags
     int i, j, k, result;
     result = 1;
+
     for (i = 1; i <= password_max_length; i++)
     {
-        long possibilities = (long)pow(number_of_characters, i);
-        if (verbose)
-        {
-            printf("Now calculating password length of %d, it has %ld possibilities\n", i, possibilities);
-        }
-        char passwordToTest[i+1];
+        // Calculate the number of permutations we'll need to calculate
+        long possibilities = calculate_possibilities(number_of_characters, i, verbose);
+        char passwordToTest[i + 1];
         for (j = 0; j < possibilities; j++)
         {
-            strcpy(passwordToTest, "");
-            int val = j;
-            for (k = 0; k < i; k++)
-            {
-                passwordToTest[k] = characters[val % number_of_characters];
-                val = val / number_of_characters;
-            }
-            passwordToTest[i]='\0';
+            // generate password, hash it, then compare it
+            generate_password(i, characters, number_of_characters, j, passwordToTest);
             hash(passwordToTest, buffer);
             if (!strcmp(password_hash, buffer))
             {
@@ -43,9 +35,11 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
             }
         }
     }
+
+    // Print not found result
     if (result)
     {
-      printf("Password not found.\n");
+        printf("Password not found.\n");
     }
     return result;
 }

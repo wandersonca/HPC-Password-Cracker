@@ -1,4 +1,3 @@
-#include <math.h>
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,22 +9,16 @@
 
 int bruteforce_crack(char *password_hash, char *characters, int password_max_length, int verbose)
 {
-    static unsigned char buffer[65];
+    // Input Calculations
     int number_of_characters = strlen(characters);
+    if (verbose)  print_stats(password_hash, characters, number_of_characters, password_max_length);
 
-    printf("Brute force of hash: %s\n", password_hash);
-    printf("Using %d characters: %s\n", number_of_characters, characters);
-    printf("Calculating to a length of %d\n", password_max_length);
-
+    // Program counters and flags
     int i, j, k, l, result;
     result = 1;
     for (i = 1; i <= password_max_length; i++)
     {
-        long possibilities = (long)pow(number_of_characters, i);
-        if (verbose)
-        {
-            printf("Now calculating password length of %d, it has %ld possibilities\n", i, possibilities);
-        }
+        long possibilities = calculate_possibilities(number_of_characters, i, verbose);
         char passwordToTest[i+1];
         for (j = 0; j < possibilities;)
         {
