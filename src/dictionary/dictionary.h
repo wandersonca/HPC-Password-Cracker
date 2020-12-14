@@ -19,6 +19,9 @@
 #define MPI_COUNT_LIMIT 20
 
 
+#define OMP_COUNT_LIMIT 1
+
+
 
 
 

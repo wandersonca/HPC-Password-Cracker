@@ -8,7 +8,7 @@
 
 #define N 10
 #define BUF_SIZE 80
-#define FILE_PREFIX "file_0"    // TODO: change so 10+ supported
+#define FILE_PREFIX "file_" 
 
 
 int dictionary_crack(char *password_hash, char *dictionary_path, int verbose);
@@ -30,11 +30,9 @@ void compare_candidates(FILE **file, char *password_hash, int verbose, int *resu
 int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
 {
   int my_rank;
-  //int p;    // don't seem to use this ... 
 
   MPI_Init(NULL, NULL);
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-  //MPI_Comm_size(MPI_COMM_WORLD, &p);    // don't seem to use this ...
 
   if (verbose)
     printf("\n>>> Using dictionary path: %s\n", dictionary_path);
@@ -61,7 +59,6 @@ int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
   if (file_failure)
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
 
-  //compare_candidates(&file, password_hash, MPI, verbose, &result, &password);
   compare_candidates(&file, password_hash, verbose, &result, &password);
 
   close_dictionary_file(&file);
@@ -115,7 +112,14 @@ void set_mpi_dictionary_filename(char *dictionary_path, int rank, char **filenam
     int filename_length = strlen(dictionary_path) + 1;
 
     *filename = (char *)malloc(sizeof(char) * (filename_length));
-    sprintf(*filename, "%s/%s%d\0", dictionary_path, FILE_PREFIX, rank);
+    if(rank<10) 
+    {
+      sprintf(*filename, "%s/%s0%d\0", dictionary_path, FILE_PREFIX, rank);
+    }
+    else 
+    {
+      sprintf(*filename, "%s/%s%d\0", dictionary_path, FILE_PREFIX, rank);
+    }
 }
 
 

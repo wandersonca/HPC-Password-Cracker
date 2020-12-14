@@ -36,9 +36,8 @@ int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
         print_password_hash(password_hash);
     }
 
-    #pragma omp parallel
-      #pragma omp single
-        compare_candidates(&file, password_hash, verbose, &result, &password);
+
+    compare_candidates(&file, password_hash, verbose, &result, &password);
 
     close_dictionary_file(&file);
 
@@ -52,6 +51,14 @@ int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
     return result;
 }
 
+int omp_result_check(int my_result)
+{
+  int result_check;
+  //MPI_Allreduce(&my_result, &result_check, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
+
+  //return result_check;
+  return NOT_FOUND;
+}
 
 
 /* 
@@ -72,32 +79,28 @@ void compare_candidates(FILE **file, char *password_hash, int verbose, int *resu
     size_t len = 0;
     ssize_t read;
 
-    int count = 0;  /* for implementations that require a counter */
-
-    while ((read = getline(&line, &len, *file)) != -1)
+    #pragma omp parallel shared(result)
     {
-        char *candidate_buffer = NULL;
-        remove_new_line(line, &candidate_buffer);
-     
-        
-        #pragma omp task firstprivate(candidate_buffer)
+      #pragma omp single
+      {
+        while ((read = getline(&line, &len, *file) != -1) && *result)
         {
-            //TODO: Make an OMP_COUNT_LIMIT or make these use the same macro??
-            if(count == MPI_COUNT_LIMIT)
+            char *candidate_buffer = NULL;
+            remove_new_line(line, &candidate_buffer);
+        
+            #pragma omp task firstprivate(candidate_buffer)
             {
-                // do something to check
-            }
+                if( *result == NOT_FOUND )
+                {
+                    /* if NOT_FOUND, keep looking */
+                    #pragma omp critcal
+                        do_comparison(password_hash, candidate_buffer, verbose, result, password_text);
+                }
 
-            /* if NOT_FOUND, keep looking */
-            do_comparison(password_hash, candidate_buffer, verbose, result, password_text);
+            } // end task
 
-            /* This STOPS the processing of the file on the process that FOUND the password */
-            if(*result == FOUND)
-            {
-                if(verbose)
-                    printf("We've got OMP things to figure out here....\n");
-                //return;
-            }
-        }
+        }  // end while
+
+      }
     }
 }

@@ -106,7 +106,7 @@ void open_dictionary_file(char *dictionary_path, FILE **file, int mode, int *fai
 {
     *file = fopen(dictionary_path, "r");
 
-    if (file == NULL)
+    if ( *file == NULL)
     {
         printf("Error reading dictionary file: %s\n", dictionary_path);
 
