@@ -20,7 +20,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
     for (i = 1; i <= password_max_length; i++)
     {
         // Calculate the number of permutations we'll need to calculate
-        long possibilities = calculate_possibilities(number_of_characters, i, verbose);
+        long possibilities = calculate_possibilities(number_of_characters, i, verbose, 0);
         char passwordToTest[i + 1];
         for (j = 0; j < possibilities; j++)
         {

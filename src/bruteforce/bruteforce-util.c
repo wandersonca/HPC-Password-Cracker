@@ -7,10 +7,10 @@ void print_stats(char *password_hash, char *characters, int number_of_characters
     printf("Calculating to a length of %d\n", password_max_length);
 }
 
-long calculate_possibilities(int number_of_characters, int length, int verbose)
+long calculate_possibilities(int number_of_characters, int length, int verbose, int my_rank)
 {
     long possibilities = (long)pow(number_of_characters, length);
-    if (verbose)
+    if (verbose && my_rank == 0)
     {
         printf("Now calculating password length of %d, it has %ld possibilities\n", length, possibilities);
     }
