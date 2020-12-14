@@ -66,6 +66,9 @@ Pass in the full path of the dictionary file.
 ### How to run brute force attack:
 ``OMP_NUM_THREADS=4 ./bin/omp-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
 
+## Install MPI on Ubuntu
+ Run from command line: ``sudo apt install libopenmpi-dev``
+
 ## Authors
 * Donna Harris
 * Ma Luo

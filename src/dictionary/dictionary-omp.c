@@ -36,9 +36,8 @@ int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
         print_password_hash(password_hash);
     }
 
-    // #pragma omp parallel
-    //   #pragma omp single
-        compare_candidates(&file, password_hash, verbose, &result, &password);
+
+    compare_candidates(&file, password_hash, verbose, &result, &password);
 
     close_dictionary_file(&file);
 
