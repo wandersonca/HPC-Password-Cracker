@@ -1,5 +1,5 @@
-#include "dictionary.h"
-
+#include "../hash/hash.h"
+#include "../globals.h"
 
 /* 
     remove_new_line()
@@ -21,25 +21,8 @@ void remove_new_line(char *input, char **output)
     else
     {
         *output = (char *)malloc(sizeof(char) * (len + 1));
-        sprintf(*output, "%s\0", input);
+        sprintf(*output, "%s", input);
     }
-}
-
-/* 
-    return_password_text()
-        - copies the text of the candidate password into the location
-
-        input:  the string to be copied
-        ouput:  a copy of the input string, as the requested location
-*/
-void return_password_text(char *input, char **output)
-{
-    int len = strlen(input);
-
-    *output = (char *)malloc(sizeof(char) * len);
-    memcpy(*output, input, len);
-
-    // TODO: fix the printing problem with the MPI *output value. Often has extra junk. But the comparison is accurate.
 }
 
 /* 
@@ -72,7 +55,6 @@ void print_password_found(char *match, int verbose)
 
     if(verbose)
         printf("\n");
-
 }
 
 /* 
@@ -93,60 +75,6 @@ void print_not_found(int verbose)
 }
 
 /* 
-    open_dictionary_file()
-        - opens the directory file from the provided location
-
-        dictionary_path:    the full path to the dictionary file
-        file:               pointer to the dictionary file in memory
-        mode:               the implementation mode (SERIAL, MPI, OMP, etc.)
-        verbose:            set to 1 for verbose mode
-
-*/
-void open_dictionary_file(char *dictionary_path, FILE **file, int mode, int *failure)
-{
-    *file = fopen(dictionary_path, "r");
-
-    if ( *file == NULL)
-    {
-        printf("Error reading dictionary file: %s\n", dictionary_path);
-
-        switch(mode)
-        {
-            case SERIAL:
-                printf("Exiting with error code %d.\n", EXIT_FAILURE);
-                exit(EXIT_FAILURE);
-                break;
-            case MPI:
-                *failure = FAILURE;
-                break;
-            case OMP:  // IF this works, it's the same as SERIAL... consolidate?
-                *failure = FAILURE;
-                printf("Exiting with error code %d.\n", EXIT_FAILURE);
-                exit(EXIT_FAILURE);        
-                break;
-            default:
-                printf("Unknown implementation mode provided. Exiting with error code %d.\n", EXIT_FAILURE);
-                exit(EXIT_FAILURE);     
-                break;
-
-        }
-    }
-
-    *failure = SUCCESS;
-}
-
-/* 
-    close_dictionary_file()
-        - closes the file
-
-        file:               pointer to the file in memory
-*/
-void close_dictionary_file(FILE **file)
-{
-    fclose(*file);
-}
-
-/* 
     do_comparison()
         - 1. hashes the plaintext password candidate from the dictionary file
         - 2. compares two hashed values
@@ -155,23 +83,20 @@ void close_dictionary_file(FILE **file)
         password_hash:      hashed value of the password to be cracked
         candidate_buffer:   plain text password candidate from the dictionary file
         verbose:            set to 1 for verbose mode
-        result:             (output) FOUND or NOT_FOUND result
-        password_text:      (output) plain text of the discovered password
 
 */
-void do_comparison(char *password_hash, char *candidate_buffer, int verbose, int *result, char **password_text)
+int do_comparison(char *password_hash, char *candidate_buffer, int verbose)
 {
     unsigned char candidate_hash[65];
     hash(candidate_buffer, candidate_hash);
 
-    if (verbose)
+    if (DEBUG)
         printf("Password candidate from file:\t%16s\t--->\t%s\n", candidate_buffer, candidate_hash);   
 
     if (!strcmp(password_hash, candidate_hash))
     {
-        *result = FOUND;
-        return_password_text(candidate_buffer, password_text);
-        free(candidate_buffer);
-
+        print_password_found(candidate_buffer, verbose);
+        return FOUND;
     }
+    return NOT_FOUND;
 }
