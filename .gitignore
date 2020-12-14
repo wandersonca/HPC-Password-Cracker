@@ -3,8 +3,4 @@ cli
 .vscode
 *.o
 bin/
-temp/*
-temp/file_00
-temp/file_01
-temp/file_02
-temp/file_03
+temp/

@@ -22,3 +22,12 @@ steps:
     - mkdir -p temp
     - split -d -l 25 dictionary_files/100_pass.txt temp/file_
     - mpirun --allow-run-as-root -np 4 ./bin/mpi-cracker -d temp -p $(echo -n '123456' | sha256sum) -v
+  - name: build-omp
+    image: wandersonca/gcc
+    commands:
+    - make omp
+  - name: test-omp
+    image: wandersonca/gcc
+    commands:
+    - OMP_NUM_THREADS=4 ./bin/omp-cracker -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum) -v
+    - OMP_NUM_THREADS=4 ./bin/omp-cracker -bluns -p $(echo -n 'test' | sha256sum) -v
