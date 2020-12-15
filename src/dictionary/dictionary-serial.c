@@ -2,68 +2,58 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-#include "../hash/hash.h"
 #include "dictionary-util.c"
+#include "../hash/hash.h"
+#include "../globals.h"
 
+int compare_candidates(FILE **file, char *password_hash, int verbose);
 
-int dictionary_crack(char *password_hash, char *dictionary_path, int verbose);
-void compare_candidates(FILE **file, char *password_hash, int verbose, int *result, char **password_text);
-
-
-/* 
-    dictionary_crack()
-        - Serial Implementation
-
-        password_hash:      hashed password string to crack
-        dictionary_path:    full path, including filename (serial)
-        verbose:            set to 1 for verbose mode
-*/
+/**
+ * dictionary_crack() - Serial Implementation
+ *
+ * The Serial implementation of the dictionary attack.
+ *
+ * @param password_hash is the hashed password string to crack.
+ * @param dictionary_path is the full path, including the dictionary filename.
+ * @param verbose is a flag for verbose mode. Set to 1 to enable.
+ * @return the result as an integer value, FOUND (0) or NOT_FOUND (1).
+ */
 int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
 {
-    int result = NOT_FOUND;         /* default: match not found */
-    int file_failure = SUCCESS;     /* default: no failure */
-
-    char *password = NULL;
-
-    FILE *file = NULL;
-    open_dictionary_file(dictionary_path, &file, SERIAL, &file_failure);
-
+    // Print input parameters 
     if( verbose )
     {
         printf("\n>>> Using dictionary path: %s\n", dictionary_path);
         print_password_hash(password_hash);
     }
 
-    compare_candidates(&file, password_hash, verbose, &result, &password);
+    // Open file
+    FILE *file = fopen(dictionary_path, "r");
 
-    close_dictionary_file(&file);
+    // Do calculation
+    int result = compare_candidates(&file, password_hash, verbose);
 
     if(result == NOT_FOUND)
         print_not_found(verbose);
-    else if(result == FOUND)
-        print_password_found(password, verbose);
 
-    free(password);
-
+    // Cleanup
+    fclose(file);
     return result;
 }
 
-
-
-
-/* 
-    compare_candidates()
-        - 1. manages iterating through the dictionary file and initiating the has comparisons
-        - 2. returns the result value (FOUND or NOT_FOUND) and the plain text password, if found
-
-        file:               pointer to the dictionary file in memory
-        password_hash:      hashed value of the password to be cracked
-        verbose:            set to 1 for verbose mode
-        result:             (output) FOUND or NOT_FOUND result
-        password_text:      (output) plain text of the discovered password
-
-*/
-void compare_candidates(FILE **file, char *password_hash, int verbose, int *result, char **password_text)
+/**
+ * compare_candidates() - comparing password_hash against hashed dictionary entires
+ * (Serial Implementation)
+ * 
+ * 1. Manages iterating through the dictionary file and initiating the has comparisons.
+ * 2. Returns the result value (FOUND or NOT_FOUND) and the plain text password, if found.
+ *
+ * @param file is a pointer to the dictionary file in memory.
+ * @param password_hash is the hashed password string to crack.
+ * @param verbose is a flag for verbose mode. Set to 1 to enable.
+ * @return the result as an integer value, FOUND (0) or NOT_FOUND (1).
+ */
+int compare_candidates(FILE **file, char *password_hash, int verbose)
 {
     char *line = NULL;
     size_t len = 0;
@@ -74,9 +64,13 @@ void compare_candidates(FILE **file, char *password_hash, int verbose, int *resu
         char *candidate_buffer = NULL;
         remove_new_line(line, &candidate_buffer);
      
-        do_comparison(password_hash, candidate_buffer, verbose, result, password_text);
+        int result = do_comparison(password_hash, candidate_buffer, verbose);
 
-        if(*result == FOUND)
-            return;
+        if(result == FOUND)
+        {
+            return FOUND;
+        }
+            
     }
+    return NOT_FOUND;
 }
