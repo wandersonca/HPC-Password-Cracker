@@ -40,7 +40,7 @@ or using short option names:
 ### How to pre-split files for parallel dictionary attack methods:
 Provide the number of lines per file. (E.g., With 4 processes, we will need 4 files. 100 passwords split evenly into 25 lines per file.)
 
-``split -d -l 25 dictionary_files/100_pass.txt temp/file_``
+``mkdir -p temp && split -d -l 25 dictionary_files/100_pass.txt temp/file_``
 
 ### How to compile:
 Run make: ``make mpi``
