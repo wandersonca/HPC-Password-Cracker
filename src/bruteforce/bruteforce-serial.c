@@ -44,8 +44,11 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
             int val = j;
             for (k = 0; k < i; k++)
             {
-                passwordToTest[k] = characters[val % number_of_characters];
-                val = val / number_of_characters;
+                /*
+                * assign characters[val % number_of_characters] to passwordToTest[k] and
+                * returns next val - val / number_of_characters
+                */
+                val = assignCharInBuffer(passwordToTest, characters, k, number_of_characters, val);
             }
             passwordToTest[i]='\0';
             hash(passwordToTest, buffer);
