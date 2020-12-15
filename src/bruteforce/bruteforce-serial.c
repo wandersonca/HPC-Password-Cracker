@@ -1,8 +1,8 @@
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../hash/hash.h"
+#include "../globals.h"
 #include "bruteforce-util.c"
 
 /*
@@ -21,36 +21,25 @@
 
 int bruteforce_crack(char *password_hash, char *characters, int password_max_length, int verbose)
 {
+    // Input Calculations
     static unsigned char buffer[65];
     int number_of_characters = strlen(characters);
+    if (verbose)
+        print_stats(password_hash, characters, number_of_characters, password_max_length);
 
-    printf("Brute force of hash: %s\n", password_hash);
-    printf("Using %d characters: %s\n", number_of_characters, characters);
-    printf("Calculating to a length of %d\n", password_max_length);
-
+    // Program counters and flags
     int i, j, k, result;
-    result = 1;
+    result = NOT_FOUND;
+
     for (i = 1; i <= password_max_length; i++)
     {
-        long possibilities = (long)pow(number_of_characters, i);
-        if (verbose)
-        {
-            printf("Now calculating password length of %d, it has %ld possibilities\n", i, possibilities);
-        }
+        // Calculate the number of permutations we'll need to calculate
+        long possibilities = calculate_possibilities(number_of_characters, i, verbose, 0);
         char passwordToTest[i + 1];
         for (j = 0; j < possibilities; j++)
         {
-            strcpy(passwordToTest, "");
-            int val = j;
-            for (k = 0; k < i; k++)
-            {
-                /*
-                * assign characters[val % number_of_characters] to passwordToTest[k] and
-                * returns next val - val / number_of_characters
-                */
-                val = assignCharInBuffer(passwordToTest, characters, k, number_of_characters, val);
-            }
-            passwordToTest[i] = '\0';
+            // generate password, hash it, then compare it
+            generate_password(i, characters, number_of_characters, j, passwordToTest);
             hash(passwordToTest, buffer);
             /*
             * We are going to print out @passwordToTest directly if @password_hash aligns with @buffer.
@@ -58,11 +47,16 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
             result = findPasswordOrNo(password_hash, buffer, passwordToTest);
             if (!result)
             {
-                return result;
+
+                printf("Password found: %s\n", passwordToTest);
+                result = FOUND;
+                return result; // want to break out of these nested for loops...
             }
         }
     }
-    if (result)
+
+    // Print not found result
+    if (result == NOT_FOUND)
     {
         printf("Password not found.\n");
     }

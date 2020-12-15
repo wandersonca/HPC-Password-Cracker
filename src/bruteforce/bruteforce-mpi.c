@@ -1,12 +1,10 @@
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../hash/hash.h"
-#include "bruteforce-util.c"
 #include <mpi.h>
-
-#define CHUNK_SIZE 100000
+#include "bruteforce-util.c"
+#include "../hash/hash.h"
+#include "../globals.h"
 
 /*
 * @Author: William Anderson
@@ -29,60 +27,48 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
     // MPI Setup
     int my_rank;
     int p;
-    int source;
-    int dest;
-    MPI_Status status;
-    int number_of_characters = 0;
     MPI_Init(NULL, NULL);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &p);
-
+    
+    // Input Calculations
     static unsigned char buffer[65];
-    number_of_characters = strlen(characters);
+    int number_of_characters = strlen(characters);
+    if (verbose && my_rank == 0)  print_stats(password_hash, characters, number_of_characters, password_max_length);
 
-    if (my_rank == 0)
-    {
-        printf("Brute force of hash: %s\n", password_hash);
-        printf("Using %d characters: %s\n", number_of_characters, characters);
-        printf("Calculating to a length of %d\n", password_max_length);
-    }
+    // Program counters and flags
+    int i, j, k, result, collective_result;
+    result = NOT_FOUND;
+    collective_result = NOT_FOUND;
 
-    int i, j, k, result, final_result;
-    result = 1;
-    final_result = 1;
-    for (i = 1; i <= password_max_length; i++)
+    for (i = 1; i <= password_max_length && collective_result > 0; i++)
     {
-        if (final_result == 0)
-        {
-            break;
-        }
-        long possibilities = (long)pow(number_of_characters, i);
-        if (verbose && my_rank == 0)
-        {
-            printf("Now calculating password length of %d, it has %ld possibilities\n", i, possibilities);
-        }
+        // Calculate the number of permutations we'll need to calculate
+        long possibilities = calculate_possibilities(number_of_characters, i, verbose, my_rank);
         char passwordToTest[i + 1];
+
+        // split up for loop for chunking work
         for (j = my_rank; j < possibilities;)
         {
-            MPI_Allreduce(&result, &final_result, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
-            if (final_result == 0)
+            // Periodically check result to break early
+            MPI_Allreduce(&result, &collective_result, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
+            if (collective_result == 0)
             {
                 break;
             }
-            int nextStep = climbToMax(j, possibilities, CHUNK_SIZE);
-            for (; j < nextStep; j += p)
-            {
-                int val = j;
-                for (k = 0; k < i; k++)
-                {
-                    val = assignCharInBuffer(passwordToTest, characters, k, number_of_characters, val);
-                }
-                passwordToTest[i] = '\0';
+
+            // Calculate and execute next chunk of work
+            int nextStep = calculate_next_step(j, possibilities, CHUNK_SIZE);
+            for (;j < nextStep; j+=p)
+            {      
+                // generate password, hash it, then compare it     
+                generate_password(i, characters, number_of_characters, j, passwordToTest);
+
                 hash(passwordToTest, buffer);
                 if (!strcmp(password_hash, buffer))
                 {
                     printf("Password found: %s\n", passwordToTest);
-                    result = 0;
+                    result = FOUND;
                 }
                 /*
                 * We ahve tried to use the common methods here, but mpi does not support a return statemnt in the middle of logic
@@ -93,15 +79,14 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
         }
     }
 
-    MPI_Barrier(MPI_COMM_WORLD);
-
-    MPI_Allreduce(&result, &final_result, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
-
-    // Shutdown MPI
-    MPI_Finalize();
-    if (final_result && my_rank == 0)
+    // Print not found result
+    MPI_Allreduce(&result, &collective_result, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
+    if (collective_result == NOT_FOUND && my_rank == 0)
     {
         printf("Password not found.\n");
     }
-    return final_result;
+    
+    // Shutdown MPI
+    MPI_Finalize();
+    return FOUND;
 }

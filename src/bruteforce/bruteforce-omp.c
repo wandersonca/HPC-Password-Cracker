@@ -1,12 +1,10 @@
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <omp.h>
-#include "../hash/hash.h"
 #include "bruteforce-util.c"
-
-#define CHUNK_SIZE 100000
+#include "../hash/hash.h"
+#include "../globals.h"
 
 /*
 * @Author: William Anderson
@@ -26,50 +24,47 @@
 
 int bruteforce_crack(char *password_hash, char *characters, int password_max_length, int verbose)
 {
+    // Input Calculations
     int number_of_characters = strlen(characters);
-    
-    Greetings(password_hash,password_max_length,characters,number_of_characters);
 
-    int result = 1;
+    if (verbose)  print_stats(password_hash, characters, number_of_characters, password_max_length);
+
+
+    // Program counters and flags
+    int result = NOT_FOUND;
     int i, j;
 
-    for (i = 1; i <= password_max_length; i++)
+    for (i = 1; i <= password_max_length && result > 0; i++)
     {
-        long possibilities = (long)pow(number_of_characters, i);
-        if (verbose)
+
+        // Calculate the number of permutations we'll need to calculate
+        long possibilities = calculate_possibilities(number_of_characters, i, verbose, 0);
+
+        // split up for loop for chunking work
+        for (j = 0; j < possibilities && result > 0;)
         {
-            printf("Now calculating password length of %d, it has %ld possibilities\n", i, possibilities);
-        }
-        for (j = 0; j < possibilities;)
-        {
-            if (result == 0)
-            {
-                // found password early, break out!
-                return 0;
-            }
-            int nextStep = climbToMax(j, possibilities, CHUNK_SIZE);
+            // Calculate and execute next chunk of work
+            int nextStep = calculate_next_step(j, possibilities, CHUNK_SIZE);
             int k;
             #pragma omp parallel
             {
                 #pragma omp for schedule(auto)
                 for (k = j; k < nextStep; k++)
                 {
+                    // generate password, hash it, then compare it
                     unsigned char buffer[65];
                     char passwordToTest[i + 1];
-                    int val = k;
-                    int l;
-                    for (l = 0; l < i; l++)
-                    {
-                        val = assignCharInBuffer(passwordToTest, characters, l, number_of_characters, val);
-                    }
-                    passwordToTest[i] = '\0';
+
+                    generate_password(i, characters, number_of_characters, k, passwordToTest);
+
                     hash(passwordToTest, buffer);
                     if (!strcmp(password_hash, buffer))
                     {
                         #pragma omp critical
                         {
-                            printPassIfFound(passwordToTest,PASS_FOUND);
-                            result = 0;
+
+                            printf("Password found: %s\n", passwordToTest);
+                            result = FOUND;
                         }
                     }
                 }
@@ -78,7 +73,8 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
         }
     }
 
-    if (result)
+    // Print not found result
+    if (result == NOT_FOUND)
     {
         printPassIfFound("",PASS_NOT_FOUND);
     }
