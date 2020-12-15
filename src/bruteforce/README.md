@@ -30,3 +30,13 @@ The settings may be specified as follows:
 All program runs require the hashed password to be specified using the -p argument followed by the hashed password string. The approach modelled in our project documentation generates the hash for a plain text password: 
 
 -p $(echo -n 'test' | sha256sum) 
+
+### Sample test case overall
+
+Under root folder of git project, clean solution: ``make clean``
+
+For serial: ``make serial || ./bin/serial-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
+
+For MPI: ``make mpi || mpirun -np 4 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
+
+For OMP: ``make omp || OMP_NUM_THREADS=4 ./bin/omp-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
