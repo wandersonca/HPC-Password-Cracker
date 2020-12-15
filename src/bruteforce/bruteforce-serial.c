@@ -41,7 +41,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
             // generate password, hash it, then compare it
             generate_password(i, characters, number_of_characters, j, passwordToTest);
             hash(passwordToTest, buffer);
-            if (!result)
+            if (!strcmp(password_hash, buffer))
             {
                 printf("Password found: %s\n", passwordToTest);
                 result = FOUND;

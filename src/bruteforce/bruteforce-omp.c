@@ -71,7 +71,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
     // Print not found result
     if (result == NOT_FOUND)
     {
-        printPassIfFound("",PASS_NOT_FOUND);
+         printf("Password not found.\n");
     }
     return result;
 }
