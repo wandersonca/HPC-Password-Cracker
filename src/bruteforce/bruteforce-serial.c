@@ -5,18 +5,18 @@
 #include "../globals.h"
 #include "bruteforce-util.c"
 
-/*
-* @Author: William Anderson
+/**
+* @author: William Anderson
 *
 * Brute force attack entry function 
 *
 * Enhanced two For-Loop implementation is used here.  All the possibilities is generated and comparision is happening along with the process.
 *
-* @password_hash - hashed each character in password with sha256 values and hold them with this buffer.
-* @characters - patters to compare with which relies on the option we have picked in the main.c program.
-* @password_max_length - by default is 4, we might have -c N passes in as we are testing password with lengh N.
-* @verbose - options to print out debug info
-* @return result - 1 indicates not found, 0 indicates found
+* @param password_hash - hashed each character in password with sha256 values and hold them with this buffer.
+* @param characters - patters to compare with which relies on the option we have picked in the main.c program.
+* @param password_max_length - by default is 4, we might have -c N passes in as we are testing password with lengh N.
+* @param verbose - options to print out debug info
+* @return 1 indicates not found, 0 indicates found
 */
 
 int bruteforce_crack(char *password_hash, char *characters, int password_max_length, int verbose)

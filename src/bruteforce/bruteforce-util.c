@@ -5,16 +5,16 @@
 #include "../hash/hash.h"
 #include "bruteforce.h"
 
-/*
-* @Author: Willam Anderson
+/**
+* @author: Willam Anderson
 *
 * This function is used to generate probabilities for specific password lengh and print it out when the rank encounters 0 
 *
-* @number_of_characters - size of pattern set to match the hashed password
-* @length - value varies from 0 to maxium password lengh (non-hashed one)
-* @verbose - flag for showing debugging message
-* @my_rank - rank of process 0 to p
-* return possibilities - number of probabilities with password lengh - @length
+* @param number_of_characters - size of pattern set to match the hashed password
+* @param length - value varies from 0 to maxium password lengh (non-hashed one)
+* @param verbose - flag for showing debugging message
+* @param my_rank - rank of process 0 to p
+* @return possibilities - number of probabilities with password lengh - @length
 *
 */
 
@@ -35,16 +35,16 @@ long calculate_possibilities(int number_of_characters, int length, int verbose, 
     return possibilities;
 }
 
-/*
-* @Author: Willam Anderson
+/**
+* @author: Willam Anderson
 *
 * This function is used to give actual password in the result field.
 * To be notified, the operations on the result, will be effective in the device memory
 *
-* @length - size of password length (non-hashed)
-* @characters - character set to compare with
-* @number_of_characters - size of characters sets
-* @seed - index to the character set, and reflecting to password set with [seed % number_of_characters] in a recursion way in the loop
+* @param length - size of password length (non-hashed)
+* @param characters - character set to compare with
+* @param number_of_characters - size of characters sets
+* @param seed - index to the character set, and reflecting to password set with [seed % number_of_characters] in a recursion way in the loop
 * @result - buffer to hold the password to be tested with
 *
 */
@@ -60,16 +60,16 @@ void generate_password(int length, char *characters, int number_of_characters, i
     result[length] = '\0';
 }
 
-/*
-* @Author: Willam Anderson
+/**
+* @author: Willam Anderson
 *
 * This function is used to give actual password in the result field.
 * To be notified, the operations on the result, will be effective in the device memory
 *
-* @counter - base counter from last step
-* @possibilities - maxium num of the probalities
-* @chunk_size - step size, each step will increase counter by @chunk_size
-* return @counter + @chunk_size - returns the counter for next step
+* @param counter - base counter from last step
+* @param possibilities - maxium num of the probalities
+* @param chunk_size - step size, each step will increase counter by @chunk_size
+* @return @counter + @chunk_size - returns the counter for next step
 *
 */
 
