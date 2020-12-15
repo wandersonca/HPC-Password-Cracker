@@ -41,15 +41,12 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
             // generate password, hash it, then compare it
             generate_password(i, characters, number_of_characters, j, passwordToTest);
             hash(passwordToTest, buffer);
-            /*
-            * We are going to print out @passwordToTest directly if @password_hash aligns with @buffer.
-            */
-            result = findPasswordOrNo(password_hash, buffer, passwordToTest);
             if (!result)
             {
                 printf("Password found: %s\n", passwordToTest);
                 result = FOUND;
-                return result; // want to break out of these nested for loops...
+                // want to break out of these nested for loops
+                return result; 
             }
         }
     }
