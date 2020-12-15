@@ -50,11 +50,15 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
         // split up for loop for chunking work
         for (j = my_rank; j < possibilities;)
         {
-            // Periodically check result to break early
-            MPI_Allreduce(&result, &collective_result, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
-            if (collective_result == 0)
-            {
-                break;
+            // Only want to run an Allrecude if all processes are participating 
+            if(possibilities > p)
+            {  
+                // Periodically check result to break early
+                MPI_Allreduce(&result, &collective_result, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
+                if (collective_result == 0)
+                {
+                    break;
+                }
             }
 
             // Calculate and execute next chunk of work
@@ -69,11 +73,6 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
                     printf("Password found: %s\n", passwordToTest);
                     result = FOUND;
                 }
-                /*
-                * We ahve tried to use the common methods here, but mpi does not support a return statemnt in the middle of logic
-                * An error will be thrown, [Exit code: 1] 
-                */
-                //result = findPasswordOrNo(password_hash, buffer, passwordToTest);
             }
         }
     }
