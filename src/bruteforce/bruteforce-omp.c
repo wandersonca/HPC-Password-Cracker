@@ -27,9 +27,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
 {
     // Input Calculations
     int number_of_characters = strlen(characters);
-
     if (verbose)  print_stats(password_hash, characters, number_of_characters, password_max_length);
-
 
     // Program counters and flags
     int result = NOT_FOUND;
@@ -37,10 +35,8 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
 
     for (i = 1; i <= password_max_length && result > 0; i++)
     {
-
         // Calculate the number of permutations we'll need to calculate
         long possibilities = calculate_possibilities(number_of_characters, i, verbose, 0);
-
 
         // split up for loop for chunking work
         for (j = 0; j < possibilities && result > 0;)
@@ -56,15 +52,12 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
                     // generate password, hash it, then compare it
                     unsigned char buffer[65];
                     char passwordToTest[i + 1];
-
                     generate_password(i, characters, number_of_characters, k, passwordToTest);
-
                     hash(passwordToTest, buffer);
                     if (!strcmp(password_hash, buffer))
                     {
                         #pragma omp critical
                         {
-
                             printf("Password found: %s\n", passwordToTest);
                             result = FOUND;
                         }

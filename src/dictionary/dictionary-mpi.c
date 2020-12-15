@@ -21,7 +21,6 @@ int compare_candidates(FILE **file, char *password_hash, int verbose, int p);
  * @param verbose is a flag for verbose mode. Set to 1 to enable.
  * @return the result as an integer value, FOUND (0) or NOT_FOUND (1).
  */
-
 int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
 {
   // MPI Setup
@@ -41,7 +40,6 @@ int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
   // Open file
   char *dictionary_file_name = set_mpi_dictionary_filename(dictionary_path, my_rank);
   FILE *file = fopen(dictionary_file_name, "r");
-
 
   // Do comparison
   int result = compare_candidates(&file, password_hash, verbose, p);
@@ -112,7 +110,6 @@ char *set_mpi_dictionary_filename(char *dictionary_path, int rank)
  * @param p is the number of MPI processees.
  * @return the result as an integer value, FOUND (0) or NOT_FOUND (1).
  */
-
 int compare_candidates(FILE **file, char *password_hash, int verbose, int p)
 {
   char *line = NULL;

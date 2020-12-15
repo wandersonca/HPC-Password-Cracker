@@ -1,9 +1,4 @@
 #include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "../hash/hash.h"
-#include "bruteforce.h"
 
 /**
 * @author: Willam Anderson

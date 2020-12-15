@@ -125,11 +125,9 @@ int main(int argc, char **argv)
         * verbose_flag - debugging message in our program which might not want to show;
         */
         result = bruteforce_crack(password_hash, bruteforce_characters, character_length, verbose_flag);
-
         printf("\n>>> Invalid attack selection. Must choose either dictionary or brute force attack.\n");
         help();
         result = -1;
-
     }
     
     exit(result);
