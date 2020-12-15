@@ -22,6 +22,7 @@
 * @return result - 1 indicates not found, 0 indicates found
 */
 
+
 int bruteforce_crack(char *password_hash, char *characters, int password_max_length, int verbose)
 {
     // Input Calculations
@@ -39,6 +40,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
 
         // Calculate the number of permutations we'll need to calculate
         long possibilities = calculate_possibilities(number_of_characters, i, verbose, 0);
+
 
         // split up for loop for chunking work
         for (j = 0; j < possibilities && result > 0;)

@@ -2,7 +2,14 @@
 #include <stdio.h>
 #include <openssl/sha.h>
 
-char *hash(char *input, char outputBuffer[64])
+/**
+ * hash() - ....
+ * 
+ *
+ * @param input is ... .
+ * @return the ... in the output_buffer.
+ */
+char *hash(char *input, char output_buffer[64])
 {
     unsigned char hash[SHA256_DIGEST_LENGTH];
     int i;
@@ -10,26 +17,35 @@ char *hash(char *input, char outputBuffer[64])
     SHA256(input, strlen(input), hash);
     for (i = 0; i < SHA256_DIGEST_LENGTH; ++i)
     {
-        sprintf(outputBuffer + (i * 2), "%02x", hash[i]);
+        sprintf(output_buffer + (i * 2), "%02x", hash[i]);
     }
-    outputBuffer[64] = '\0';
+    output_buffer[64] = '\0';
 }
 
 #ifdef BUILD_CUDA
 #include "./cuda-hash/sha256.cuh"
 #include "./cuda-hash/config.h"
 
-char *batch_hash(char *input, char *outputBuffer, int passwordLength, int batchSize)
+/**
+ * batch_hash() - ....
+ * 
+ *
+ * @param input is ... .
+ * @param password_length is ... .
+ * @param batch_size is ... .
+ * @return the ... in the output_buffer.
+ */
+char *batch_hash(char *input, char *output_buffer, int password_length, int batch_size)
 {
-    unsigned char hashArray[SHA256_DIGEST_LENGTH * batchSize];
-    mcm_cuda_sha256_hash_batch(input, passwordLength, hashArray, batchSize);
+    unsigned char hash_array[SHA256_DIGEST_LENGTH * batch_size];
+    mcm_cuda_sha256_hash_batch(input, password_length, hash_array, batch_size);
     int i, j;
-    for(i=0; i < batchSize; i++) {
+    for(i=0; i < batch_size; i++) {
         for (j = 0; j < SHA256_DIGEST_LENGTH; ++j)
         {
-            sprintf(outputBuffer + (i* 65) + (j * 2), "%02x", hashArray[(i*SHA256_DIGEST_LENGTH) + j]);
+            sprintf(output_buffer + (i* 65) + (j * 2), "%02x", hash_array[(i*SHA256_DIGEST_LENGTH) + j]);
         }
-        outputBuffer[((i + 1) * 65)-1] = '\0';
+        output_buffer[((i + 1) * 65)-1] = '\0';
     }
 }
 #endif //BUILD_CUDA

@@ -7,18 +7,21 @@
 #include "../hash/hash.h"
 #include "../globals.h"
 
-char * set_mpi_dictionary_filename(char * dictionary_path, int rank);
+char *set_mpi_dictionary_filename(char *dictionary_path, int rank);
 int mpi_check_if_found(int result);
 int compare_candidates(FILE **file, char *password_hash, int verbose, int p);
 
-/* 
-    dictionary_crack()
-        - MPI Implementation
+/**
+ * dictionary_crack() - MPI Implementation
+ *
+ * The MPI implementation of the dictionary attack.
+ *
+ * @param password_hash is the hashed password string to crack.
+ * @param dictionary_path is the path to the directory with the "p" split files.
+ * @param verbose is a flag for verbose mode. Set to 1 to enable.
+ * @return the result as an integer value, FOUND (0) or NOT_FOUND (1).
+ */
 
-        password_hash:      hashed password string to crack
-        dictionary_path:    path to the directory with the "p" split files
-        verbose:            set to 1 for verbose mode
-*/
 int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
 {
   // MPI Setup
@@ -39,7 +42,8 @@ int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
   char *dictionary_file_name = set_mpi_dictionary_filename(dictionary_path, my_rank);
   FILE *file = fopen(dictionary_file_name, "r");
 
-  // do calculation
+
+  // Do comparison
   int result = compare_candidates(&file, password_hash, verbose, p);
 
   // propagate result to all processes
@@ -56,14 +60,15 @@ int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
   return 0;
 }
 
-/* 
-    mpi_result_check()
-        - a status check for the entire communicator
-        --- checks if another process has found the password match
-        --- allows the process that found the match to report its success
-
-        my_result:    the status of the process that is reporting in (FOUND or NOT_FOUND)
-*/
+/**
+ * mpi_result_check() - a status check for the entire communicator
+ *
+ * Checks if another process has found the password match.
+ * Allows the process that found the match to report its success.
+ *
+ * @param my_result is the status of the process that is reporting in. (FOUND or NOT_FOUND)
+ * @return the result as an integer value, FOUND (0) or NOT_FOUND (1).
+ */
 int mpi_result_check(int my_result)
 {
   int result_check;
@@ -71,15 +76,14 @@ int mpi_result_check(int my_result)
   return result_check;
 }
 
-/* 
-    set_mpi_dictionary_filename()
-        - sets the name of the MPI dictionary filename for a given process
-
-        dictionary_path:    the directory where the split files are located
-        rank:               the process rank (needed for the file selection)
-        filename:           the filename for this process to work, including the full path
-*/
-char * set_mpi_dictionary_filename(char *dictionary_path, int rank)
+/**
+ * set_mpi_dictionary_filename() - sets the name of the MPI dictionary filename for a given process
+ *
+ * @param dictionary_path is the directory where the split files are located/
+ * @param rank of the process. This is needed for the proper file assignment and selection.
+ * @return the filename of the dictionary generated and assigned for this process. Includes the full path.
+ */
+char *set_mpi_dictionary_filename(char *dictionary_path, int rank)
 {
   int filename_length = strlen(dictionary_path) + 1;
 
@@ -95,17 +99,20 @@ char * set_mpi_dictionary_filename(char *dictionary_path, int rank)
   return filename;
 }
 
-/* 
-    compare_candidates()
-        - 1. manages iterating through the dictionary file and initiating the has comparisons
-        - 2. returns the result value (FOUND or NOT_FOUND) and the plain text password, if found
+/**
+ * compare_candidates() - comparing password_hash against hashed dictionary entires
+ * (MPI Implementation)
+ * 
+ * 1. Manages iterating through the dictionary file and initiating the has comparisons.
+ * 2. Returns the result value (FOUND or NOT_FOUND) and the plain text password, if found.
+ *
+ * @param file is a pointer to the dictionary file in memory.
+ * @param password_hash is the hashed password string to crack.
+ * @param verbose is a flag for verbose mode. Set to 1 to enable.
+ * @param p is the number of MPI processees.
+ * @return the result as an integer value, FOUND (0) or NOT_FOUND (1).
+ */
 
-        file:               pointer to the dictionary file in memory
-        password_hash:      hashed value of the password to be cracked
-        verbose:            set to 1 for verbose mode
-        p:                  number of mpi processees
-
-*/
 int compare_candidates(FILE **file, char *password_hash, int verbose, int p)
 {
   char *line = NULL;
@@ -130,14 +137,14 @@ int compare_candidates(FILE **file, char *password_hash, int verbose, int p)
       count = 0;
     }
 
-    // if NOT_FOUND, keep looking
+    // If NOT_FOUND, keep looking
     result = do_comparison(password_hash, candidate_buffer, verbose);
     count++;
 
     // This STOPS the processing of the file on the process that FOUND the password
     if (result == FOUND)
     {
-      // report back that the match is found
+      // Report back that the match is found
       mpi_result_check(FOUND);
       return FOUND;
     }

@@ -17,6 +17,14 @@
 * return possibilities - number of probabilities with password lengh - @length
 *
 */
+
+void print_stats(char *password_hash, char *characters, int number_of_characters, int password_max_length)
+{
+    printf("Brute force of hash: %s\n", password_hash);
+    printf("Using %d characters: %s\n", number_of_characters, characters);
+    printf("Calculating to a length of %d\n", password_max_length);
+}
+
 long calculate_possibilities(int number_of_characters, int length, int verbose, int my_rank)
 {
     long possibilities = (long)pow(number_of_characters, length);
@@ -40,6 +48,7 @@ long calculate_possibilities(int number_of_characters, int length, int verbose, 
 * @result - buffer to hold the password to be tested with
 *
 */
+
 void generate_password(int length, char *characters, int number_of_characters, int seed, char * result)
 {
     int i;
@@ -50,7 +59,6 @@ void generate_password(int length, char *characters, int number_of_characters, i
     }
     result[length] = '\0';
 }
-
 
 /*
 * @Author: Willam Anderson
@@ -64,6 +72,7 @@ void generate_password(int length, char *characters, int number_of_characters, i
 * return @counter + @chunk_size - returns the counter for next step
 *
 */
+
 int calculate_next_step(int counter, int possibilities, int chunk_size)
 {
     if (counter + chunk_size > possibilities)
