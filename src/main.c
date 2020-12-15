@@ -12,6 +12,7 @@ void help();
  *
  * Launches the HPC Password Cracker program
  * 
+ * @return An integer value aligning with FOUND (0) and NOT_FOUND (1) results from the cracker execution.
  */
 int main(int argc, char **argv)
 {
@@ -102,7 +103,7 @@ int main(int argc, char **argv)
 
     int result;
 
-    // ensure only one mode is selected
+    // Ensure only one mode is selected
     if(dictionary_flag ^ bruteforce_flag)
     {
         if(dictionary_flag)

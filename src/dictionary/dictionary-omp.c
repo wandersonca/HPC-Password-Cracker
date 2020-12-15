@@ -8,14 +8,16 @@
 
 int compare_candidates(FILE **file, char *password_hash, int verbose);
 
-/* 
-    dictionary_crack()
-        - OpenMP Implementation
-
-        password_hash:      hashed password string to crack
-        dictionary_path:    full path, including filename (OpenMP)
-        verbose:            set to 1 for verbose mode
-*/
+/**
+ * dictionary_crack() - OpenMP Implementation
+ *
+ * The OpenMP implementation of the dictionary attack.
+ *
+ * @param password_hash is the hashed password string to crack.
+ * @param dictionary_path is the full path, including the dictionary filename.
+ * @param verbose is a flag for verbose mode. Set to 1 to enable.
+ * @return the result as an integer value, FOUND (0) or NOT_FOUND (1).
+ */
 int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
 {
     // Print input parameters 
@@ -28,27 +30,29 @@ int dictionary_crack(char *password_hash, char *dictionary_path, int verbose)
     // Open file
     FILE *file = fopen(dictionary_path, "r");
 
-    // do calculation
+    // Do calculation
     int result = compare_candidates(&file, password_hash, verbose);
 
     if(result == NOT_FOUND)
         print_not_found(verbose);
 
-    // cleanup
+    // Cleanup
     fclose(file);
     return result;
 }
 
-/* 
-    compare_candidates()
-        - 1. manages iterating through the dictionary file and initiating the has comparisons
-        - 2. returns the result value (FOUND or NOT_FOUND) and the plain text password, if found
-
-        file:               pointer to the dictionary file in memory
-        password_hash:      hashed value of the password to be cracked
-        verbose:            set to 1 for verbose mode
-
-*/
+/**
+ * compare_candidates() - comparing password_hash against hashed dictionary entires
+ * (OpenMP Implementation)
+ * 
+ * 1. Manages iterating through the dictionary file and initiating the has comparisons.
+ * 2. Returns the result value (FOUND or NOT_FOUND) and the plain text password, if found.
+ *
+ * @param file is a pointer to the dictionary file in memory.
+ * @param password_hash is the hashed password string to crack.
+ * @param verbose is a flag for verbose mode. Set to 1 to enable.
+ * @return the result as an integer value, FOUND (0) or NOT_FOUND (1).
+ */
 int compare_candidates(FILE **file, char *password_hash, int verbose)
 {
     char *line = NULL;
@@ -67,7 +71,7 @@ int compare_candidates(FILE **file, char *password_hash, int verbose)
 
             #pragma omp task firstprivate(candidate_buffer)
             {
-                // if NOT_FOUND, keep looking
+                // If NOT_FOUND, keep looking
                 if( result == NOT_FOUND )
                 {   
                     int temp = do_comparison(password_hash, candidate_buffer, verbose);
