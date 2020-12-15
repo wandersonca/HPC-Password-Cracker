@@ -53,7 +53,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
             passwordToTest[i] = '\0';
             hash(passwordToTest, buffer);
             /*
-            * We are going to print out password directly in the findPasswordOrNo function.
+            * We are going to print out @passwordToTest directly if @password_hash aligns with @buffer.
             */
             result = findPasswordOrNo(password_hash, buffer, passwordToTest);
             if (!result)

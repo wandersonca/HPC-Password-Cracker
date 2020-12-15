@@ -27,9 +27,8 @@
 int bruteforce_crack(char *password_hash, char *characters, int password_max_length, int verbose)
 {
     int number_of_characters = strlen(characters);
-    printf("Brute force of hash: %s\n", password_hash);
-    printf("Using %d characters: %s\n", number_of_characters, characters);
-    printf("Calculating to a length of %d\n", password_max_length);
+    
+    Greetings(password_hash,password_max_length,characters,number_of_characters);
 
     int result = 1;
     int i, j;
@@ -48,16 +47,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
                 // found password early, break out!
                 return 0;
             }
-
-            int nextStep;
-            if (j + CHUNK_SIZE > possibilities) 
-            {
-                nextStep = possibilities;
-            }
-            else 
-            {
-                nextStep = j + CHUNK_SIZE;
-            }
+            int nextStep = climbToMax(j, possibilities, CHUNK_SIZE);
             int k;
             #pragma omp parallel
             {
@@ -70,8 +60,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
                     int l;
                     for (l = 0; l < i; l++)
                     {
-                        passwordToTest[l] = characters[val % number_of_characters];
-                        val = (int)(val / number_of_characters);
+                        val = assignCharInBuffer(passwordToTest, characters, l, number_of_characters, val);
                     }
                     passwordToTest[i] = '\0';
                     hash(passwordToTest, buffer);
@@ -79,7 +68,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
                     {
                         #pragma omp critical
                         {
-                            printf("Password found: %s\n", passwordToTest);
+                            printPassIfFound(passwordToTest,PASS_FOUND);
                             result = 0;
                         }
                     }
@@ -91,7 +80,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
 
     if (result)
     {
-        printf("Password not found.\n");
+        printPassIfFound("",PASS_NOT_FOUND);
     }
     return result;
 }

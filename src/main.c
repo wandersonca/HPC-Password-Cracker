@@ -104,7 +104,7 @@ int main(int argc, char **argv)
                 strcat(bruteforce_characters, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
                 break;
             case 'l':
-                strcat(bruteforce_characters, "abcdefghijklmnopqrstuvwxyz");
+                strcat(bruteforce_characters, "abcdeJfghijklmnopqrstuvwxyz");
                 break;
             case 'n':
                 strcat(bruteforce_characters, "0123456789");
@@ -142,6 +142,11 @@ int main(int argc, char **argv)
 
     if(bruteforce_flag) 
     {
+        /*
+        * password_hash - hashed password (with sha256); bruteforce characters - character sets allowed in password;
+        * character_length - by default is 4, but will pass it with -c as arguments as code running;
+        * verbose_flag - debugging message in our program which might not want to show;
+        */
         result = bruteforce_crack(password_hash, bruteforce_characters, character_length, verbose_flag);
     }
     exit(result);

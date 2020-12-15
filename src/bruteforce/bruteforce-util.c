@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../hash/hash.h"
+#include "bruteforce.h"
 
 /*
 * @Author: Ma Luo
@@ -39,6 +40,21 @@ int findPasswordOrNo(char *passhash, char *buf, char *pass);
 
 int climbToMax(int base, int max, int step);
 
+/*
+* @Author: Ma Luo
+* 
+* @pass - matched password if we have found it
+* @check - either 1 / 0, please look at the micro value for PASS_FOUND & PASS_NOT_FOUND
+* 
+* PASS_FOUND 0
+* PASS_NOT_FOUND 1
+*
+*/
+
+void printPassIfFound(char *pass, int check);
+
+void Greetings(char *password_hash, int password_max_length, char *characters, int number_of_characters);
+
 int assignCharInBuffer(char *passwordToTest, char *characters, int pass_idx, int buf_length, int next_idx)
 {
     passwordToTest[pass_idx] = characters[next_idx % buf_length];
@@ -69,4 +85,23 @@ int climbToMax(int base, int max, int step)
         nextStep = base + step;
     }
     return nextStep;
+}
+
+void printPassIfFound(char *pass, int check)
+{
+    if (check == PASS_FOUND)
+    {
+        printf("Password found: %s\n", pass);
+    }
+    else if (check == PASS_NOT_FOUND)
+    {
+        printf("Password not found.\n");
+    }
+}
+
+void Greetings(char *password_hash, int password_max_length, char *characters, int number_of_characters)
+{
+    printf("Brute force of hash: %s\n", password_hash);
+    printf("Using %d characters: %s\n", number_of_characters, characters);
+    printf("Calculating to a length of %d\n", password_max_length);
 }
