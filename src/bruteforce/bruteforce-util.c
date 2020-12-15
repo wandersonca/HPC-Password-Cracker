@@ -14,11 +14,34 @@
 * @next_idx - help decide next val to assign into passwordToTest
 *
 */
+
 int assignCharInBuffer(char *passwordToTest, char *characters, int pass_idx, int buf_length, int next_idx);
+
+/*
+* @Author: Ma Luo
+* 
+* @passhash - hashed password with sha256 values
+* @buf - character set to compare with
+* @pass - actual password we test with
+* @return result - 1 (not found)/ 0 (found)
+*/
+
+int findPasswordOrNo(char *passhash, char *buf, char *pass);
 
 int assignCharInBuffer(char *passwordToTest, char *characters, int pass_idx, int buf_length, int next_idx)
 {
     passwordToTest[pass_idx] = characters[next_idx % buf_length];
     next_idx = next_idx / buf_length;
     return next_idx;
+}
+
+int findPasswordOrNo(char *passhash, char *buf, char *pass)
+{
+    int result = 1;
+    if (!strcmp(passhash, buf))
+    {
+        printf("Password found: %s\n", pass);
+        result = 0;
+    }
+    return result;
 }

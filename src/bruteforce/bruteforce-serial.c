@@ -52,12 +52,11 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
             }
             passwordToTest[i]='\0';
             hash(passwordToTest, buffer);
-            if (!strcmp(password_hash, buffer))
-            {
-                printf("Password found: %s\n", passwordToTest);
-                result = 0;
-                return result; // want to break out of these nested for loops...
-            }
+            /*
+            * We are going to print out password directly in the findPasswordOrNo function.
+            */
+            result = findPasswordOrNo(password_hash, buffer, passwordToTest);
+            if(!result){return result;}
         }
     }
     if (result)
