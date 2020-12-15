@@ -37,7 +37,7 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
         {
             printf("Now calculating password length of %d, it has %ld possibilities\n", i, possibilities);
         }
-        char passwordToTest[i+1];
+        char passwordToTest[i + 1];
         for (j = 0; j < possibilities; j++)
         {
             strcpy(passwordToTest, "");
@@ -50,18 +50,21 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
                 */
                 val = assignCharInBuffer(passwordToTest, characters, k, number_of_characters, val);
             }
-            passwordToTest[i]='\0';
+            passwordToTest[i] = '\0';
             hash(passwordToTest, buffer);
             /*
             * We are going to print out password directly in the findPasswordOrNo function.
             */
             result = findPasswordOrNo(password_hash, buffer, passwordToTest);
-            if(!result){return result;}
+            if (!result)
+            {
+                return result;
+            }
         }
     }
     if (result)
     {
-      printf("Password not found.\n");
+        printf("Password not found.\n");
     }
     return result;
 }

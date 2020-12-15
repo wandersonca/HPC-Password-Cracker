@@ -28,6 +28,17 @@ int assignCharInBuffer(char *passwordToTest, char *characters, int pass_idx, int
 
 int findPasswordOrNo(char *passhash, char *buf, char *pass);
 
+/*
+* @Author: Ma Luo
+* 
+* @base - starting point of a number set (smallest)
+* @max - maxium value of a set of numbers
+* @step - within each step, we are going to increase base by one step untill it reach the maxium value
+* @return nextStep - return base + step or keep the maxium value as the ending point
+*/
+
+int climbToMax(int base, int max, int step);
+
 int assignCharInBuffer(char *passwordToTest, char *characters, int pass_idx, int buf_length, int next_idx)
 {
     passwordToTest[pass_idx] = characters[next_idx % buf_length];
@@ -44,4 +55,18 @@ int findPasswordOrNo(char *passhash, char *buf, char *pass)
         result = 0;
     }
     return result;
+}
+
+int climbToMax(int base, int max, int step)
+{
+    int nextStep;
+    if (base + step > max)
+    {
+        nextStep = max;
+    }
+    else
+    {
+        nextStep = base + step;
+    }
+    return nextStep;
 }

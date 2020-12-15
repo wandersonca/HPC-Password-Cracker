@@ -69,22 +69,13 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
             {
                 break;
             }
-            int nextStep;
-            if (j + CHUNK_SIZE > possibilities)
+            int nextStep = climbToMax(j, possibilities, CHUNK_SIZE);
+            for (; j < nextStep; j += p)
             {
-                nextStep = possibilities;
-            }
-            else
-            {
-                nextStep = j + CHUNK_SIZE;
-            }
-            for (;j < nextStep; j+=p)
-            {           
                 int val = j;
                 for (k = 0; k < i; k++)
                 {
-                    passwordToTest[k] = characters[val % number_of_characters];
-                    val = val / number_of_characters;
+                    val = assignCharInBuffer(passwordToTest, characters, k, number_of_characters, val);
                 }
                 passwordToTest[i] = '\0';
                 hash(passwordToTest, buffer);
@@ -93,6 +84,11 @@ int bruteforce_crack(char *password_hash, char *characters, int password_max_len
                     printf("Password found: %s\n", passwordToTest);
                     result = 0;
                 }
+                /*
+                * We ahve tried to use the common methods here, but mpi does not support a return statemnt in the middle of logic
+                * An error will be thrown, [Exit code: 1] 
+                */
+                //result = findPasswordOrNo(password_hash, buffer, passwordToTest);
             }
         }
     }
