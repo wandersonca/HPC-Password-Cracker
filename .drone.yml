@@ -18,11 +18,10 @@ steps:
   - name: test-mpi
     image: wandersonca/mpi
     commands:
-    - mpirun --allow-run-as-root -np 2 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v
+    - mpirun --allow-run-as-root -np 1 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v
     - mkdir -p temp
-    - split -d -l 5 dictionary_files/10_pass.txt temp/file_
-    # mpi hanging on successfully found password
-    #- mpirun --allow-run-as-root -np 2 ./bin/mpi-cracker -d temp -p $(echo -n '123456' | sha256sum) -v
+    - split -d -l 25 dictionary_files/100_pass.txt temp/file_
+    - mpirun --allow-run-as-root -np 1 ./bin/mpi-cracker -d temp -p $(echo -n '123456' | sha256sum) -v
   - name: build-omp
     image: wandersonca/gcc
     commands:
