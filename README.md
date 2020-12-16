@@ -42,7 +42,7 @@ Provide the number of lines per file. (_E.g._, With four processes and 100 passw
 
 ``mkdir -p temp && split -d -l 25 dictionary_files/100_pass.txt temp/file_``
 
-Note: A current limitation here is the need to have a number of passwords even divisible by the number of processes.
+Note: A current limitation here is the need to have the number of passwords even divisible by the number of processes.
 
 ### How to compile:
 Run make: ``make mpi``
