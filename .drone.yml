@@ -15,7 +15,7 @@ steps:
     image: wandersonca/mpi
     commands:
     - make mpi
-  - name: test-mpi-brute
+  - name: test-mpi
     image: wandersonca/mpi
     commands:
     - mpirun --allow-run-as-root -np 1 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v
