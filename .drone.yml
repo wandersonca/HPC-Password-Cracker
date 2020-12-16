@@ -18,13 +18,13 @@ steps:
   - name: test-mpi-brute
     image: wandersonca/mpi
     commands:
-    - mpirun --allow-run-as-root -np 4 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v
+    - mpirun --allow-run-as-root -np 2 ./bin/mpi-cracker -bluns -p $(echo -n 'test' | sha256sum) -v
   - name: test-mpi-dict
     image: wandersonca/mpi
     commands:
     - mkdir -p temp
     - split -d -l 25 dictionary_files/100_pass.txt temp/file_
-    - mpirun --allow-run-as-root -np 1 ./bin/mpi-cracker -d temp -p $(echo -n '123456' | sha256sum) -v
+    - mpirun --allow-run-as-root -np 2 ./bin/mpi-cracker -d temp -p $(echo -n '123456' | sha256sum) -v
   - name: build-omp
     image: wandersonca/gcc
     commands:
