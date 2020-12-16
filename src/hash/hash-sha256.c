@@ -3,13 +3,12 @@
 #include <openssl/sha.h>
 
 /**
- * hash() - ....
- * 
+ * Performs a hash using the SHA256 openssl library.
  *
- * @param input is ... .
- * @return the ... in the output_buffer.
+ * @param input - the raw password to hash
+ * @return the hashed password in the output_buffer.
  */
-char *hash(char *input, char output_buffer[64])
+void hash(char *input, char output_buffer[64])
 {
     unsigned char hash[SHA256_DIGEST_LENGTH];
     int i;
@@ -27,15 +26,15 @@ char *hash(char *input, char output_buffer[64])
 #include "./cuda-hash/config.h"
 
 /**
- * batch_hash() - ....
+ * Hashes a batch of input using a CUDA library. 
  * 
- *
- * @param input is ... .
- * @param password_length is ... .
- * @param batch_size is ... .
+ * @param input - an array of raw raw password to hash
+ * @param output_buffer - the array of hashed passwords
+ * @param password_length - how long the input passwords are, they must match in size
+ * @param batch_size - how many passwords are in the array
  * @return the ... in the output_buffer.
  */
-char *batch_hash(char *input, char *output_buffer, int password_length, int batch_size)
+void batch_hash(char *input, char *output_buffer, int password_length, int batch_size)
 {
     unsigned char hash_array[SHA256_DIGEST_LENGTH * batch_size];
     mcm_cuda_sha256_hash_batch(input, password_length, hash_array, batch_size);

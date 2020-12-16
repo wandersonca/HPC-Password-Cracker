@@ -6,8 +6,6 @@
 #include "bruteforce-util.c"
 
 /**
-* @author: William Anderson
-*
 * Brute force attack entry function 
 *
 * Enhanced two For-Loop implementation is used here.  All the possibilities is generated and comparision is happening along with the process.
@@ -18,7 +16,6 @@
 * @param verbose - options to print out debug info
 * @return result - 1 indicates not found, 0 indicates found
 */
-
 int bruteforce_crack(char *password_hash, char *characters, int password_max_length, int verbose)
 {
     // Input Calculations
