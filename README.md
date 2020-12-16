@@ -62,7 +62,6 @@ Run make: ``make omp``
 
 ### How to run dictionary attack:
 Pass in the full path of the dictionary file.
-> Note: There is a known performance issue with the way OpenMP tasks are utilized here. Performance is not good. 
 
 ``OMP_NUM_THREADS=4 ./bin/omp-cracker -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum) -v``
 

@@ -59,31 +59,26 @@ int compare_candidates(FILE **file, char *password_hash, int verbose)
     size_t len = 0;
     ssize_t read;
     int result = NOT_FOUND;
+    int counter = 0;
+    char * candidate_array[CHUNK_SIZE];
 
-    #pragma omp parallel shared(result)
+    while ((read = getline(&line, &len, *file) != -1) && result == NOT_FOUND)
     {
-      #pragma omp single
-      {
-        while ((read = getline(&line, &len, *file) != -1) && result)
+        remove_new_line(line, &candidate_array[counter]);
+        if (counter++ == CHUNK_SIZE)
         {
-            char *candidate_buffer = NULL;
-            remove_new_line(line, &candidate_buffer);
-
-            #pragma omp task firstprivate(candidate_buffer)
+            #pragma omp parallel
+            #pragma omp for schedule(auto)
+            for (counter=0; counter<CHUNK_SIZE; counter++) 
             {
-                // If NOT_FOUND, keep looking
-                if( result == NOT_FOUND )
-                {   
-                    int temp = do_comparison(password_hash, candidate_buffer, verbose);
-                    if (temp == FOUND) {
-                        #pragma omp critical
-                            result = FOUND;
-                    }
-                }
-
-            } 
-        } 
-      }
-    }
+                int tempResult = do_comparison(password_hash, candidate_array[counter], verbose);
+                if (tempResult == FOUND) {
+                    #pragma omp critical
+                        result = FOUND;
+                } 
+            }
+            counter = 0;
+        }
+    } 
     return result;
 }
