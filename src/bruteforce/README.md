@@ -12,8 +12,6 @@ The brute force attack mode is specified by using either a **-b** or **--brutefo
 
 ### Set the Options
 
-?? What is the default if nothing specified ??
-
 The options include lowercase and uppercase letters, numeric digits, and symbols. Any or all of these may be used as options for the execution of a brute force attack. 
 
 The settings may be specified as follows:
