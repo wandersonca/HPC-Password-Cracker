@@ -118,7 +118,7 @@ int compare_candidates(FILE **file, char *password_hash, int verbose, int p)
 
   // Flags and counters
   int count = 0;
-  int result = 0;
+  int result = NOT_FOUND;
 
   while ((read = getline(&line, &len, *file)) != -1)
   {
@@ -134,17 +134,13 @@ int compare_candidates(FILE **file, char *password_hash, int verbose, int p)
       count = 0;
     }
 
-    // If NOT_FOUND, keep looking
-    result = do_comparison(password_hash, candidate_buffer, verbose);
+    int compResult = do_comparison(password_hash, candidate_buffer, verbose);
     count++;
 
-    // This STOPS the processing of the file on the process that FOUND the password
-    if (result == FOUND)
+    if (compResult == FOUND)
     {
-      // Report back that the match is found
-      mpi_result_check(FOUND);
-      return FOUND;
+      result = FOUND;
     }
   }
-  return NOT_FOUND;
+  return result;
 }
