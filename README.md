@@ -37,10 +37,12 @@ or using short option names:
 
 ## Parallel Implementation - MPI
 
-### How to pre-split files for parallel dictionary attack methods:
-Provide the number of lines per file. (E.g., With 4 processes, we will need 4 files. 100 passwords split evenly into 25 lines per file.)
+### How to pre-split files for MPI dictionary attack:
+Provide the number of lines per file. (_E.g._, With four processes and 100 passwords, we need four files. Divide the 100 passwords evenly into 25 per file.)
 
 ``mkdir -p temp && split -d -l 25 dictionary_files/100_pass.txt temp/file_``
+
+Note: A current limitation here is the need to have a number of passwords even divisible by the number of processes.
 
 ### How to compile:
 Run make: ``make mpi``
