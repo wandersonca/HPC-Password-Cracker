@@ -60,6 +60,7 @@ Run make: ``make omp``
 
 ### How to run dictionary attack:
 Pass in the full path of the dictionary file.
+> Note: There is a known performance issue with the way OpenMP tasks are utilized here. Performance is not good. 
 
 ``OMP_NUM_THREADS=4 ./bin/omp-cracker -d dictionary_files/100_pass.txt -p $(echo -n '123456' | sha256sum) -v``
 
@@ -67,7 +68,7 @@ Pass in the full path of the dictionary file.
 ``OMP_NUM_THREADS=4 ./bin/omp-cracker -bluns -p $(echo -n 'test' | sha256sum) -v``
 
 ## Parallel Implementation - CUDA
-Note: Only available for Brute Force attack.
+> Experemental: Only available for Brute Force attack. Also, in its current state, this solution is unoptimized and is not much faster than the serial version.
 
 ### How to compile:
 Run make: ``make cuda``
